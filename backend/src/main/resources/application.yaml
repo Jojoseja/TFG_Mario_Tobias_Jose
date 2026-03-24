@@ -1,0 +1,13 @@
+spring:
+  name: ${SPRING_APPLICATION_NAME}
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/t2fdb}
+    username: ${SPRING_DATASOURCE_USERNAME:t2fuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:t2fpass}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+
+server:
+  port: ${SERVER_PORT:8080}
