@@ -7,6 +7,10 @@ services:
       - "${BACKEND_PORT}:8080"
     env_file:
       - ./backend/.env
+    environment:
+      LOGGING_FILE_NAME: ${LOGGING_FILE_NAME:-/app/logs/time2focus.log}
+    volumes:
+      - ${BACKEND_LOGS_DIR:-./logs/backend}:/app/logs
     depends_on:
       - db
 

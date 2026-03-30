@@ -1,5 +1,7 @@
 spring:
-  name: ${SPRING_APPLICATION_NAME}
+  application:
+    name: ${SPRING_APPLICATION_NAME:time2focus}
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/t2fdb}
     username: ${SPRING_DATASOURCE_USERNAME:t2fuser}
@@ -8,6 +10,30 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+
+
+
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    com.jotomo.pomo: ${LOGGING_LEVEL_APP:DEBUG}
+    org.springframework.web: ${LOGGING_LEVEL_SPRING_WEB:INFO}
+    org.hibernate.SQL: ${LOGGING_LEVEL_HIBERNATE_SQL:WARN}
+    org.hibernate.orm.jdbc.bind: ${LOGGING_LEVEL_HIBERNATE_BIND:WARN}
+
+  file:
+    name: ${LOGGING_FILE_NAME:logs/time2focus.log}
+
+  logback:
+    rollingpolicy:
+      max-file-size: ${LOGGING_ROLLING_MAX_FILE_SIZE:10MB}
+      max-history: ${LOGGING_ROLLING_MAX_HISTORY:14}
+      total-size-cap: ${LOGGING_ROLLING_TOTAL_SIZE_CAP:1GB}
+      clean-history-on-start: ${LOGGING_ROLLING_CLEAN_HISTORY_ON_START:false}
+
+  pattern:
+    console: "${LOGGING_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{traceId}] %logger{36} - %msg%n}"
+    file: "${LOGGING_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{traceId}] %logger{36} - %msg%n}"
 
 server:
   port: ${SERVER_PORT:8080}
