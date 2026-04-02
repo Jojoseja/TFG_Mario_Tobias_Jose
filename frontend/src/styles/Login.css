@@ -1,0 +1,132 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.login-page{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:
+        radial-gradient(circle at top, rgba(90, 90, 120, 0.18), transparent 30%),
+        linear-gradient(135deg, #0f1117, #181c25 60%, #11141b);
+    font-family: Arial, Helvetica, sans-serif;
+    color: #f5f7fa;
+    padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(24, 28, 37, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 36px 30px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+}
+
+.login-brand {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.brand-logo {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #7c5cff, #4da8ff);
+  font-size: 28px;
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.3);
+}
+
+.login-brand h1 {
+  font-size: 1.9rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.login-brand p {
+  color: #a7b0c0;
+  font-size: 0.95rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 0.92rem;
+  color: #d7dce5;
+  font-weight: 600;
+}
+
+.input-group input {
+  background: #10141c;
+  border: 1px solid #2a3140;
+  color: #f5f7fa;
+  padding: 14px 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.25s ease;
+}
+
+.input-group input::placeholder {
+  color: #6f7a8c;
+}
+
+.input-group input:focus {
+  border-color: #7c5cff;
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.15);
+}
+
+.login-button {
+  margin-top: 8px;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #7c5cff, #4da8ff);
+  color: white;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-footer {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.92rem;
+  color: #98a2b3;
+}
+
+.login-footer span {
+  color: #7c5cff;
+  font-weight: 600;
+  cursor: pointer;
+}
