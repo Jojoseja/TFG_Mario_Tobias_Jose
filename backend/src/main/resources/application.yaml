@@ -14,6 +14,11 @@ spring:
 app:
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  flyway:
+    enabled: true
+    callback-locations: classpath:db/migration
+
+
 
 logging:
   level:
