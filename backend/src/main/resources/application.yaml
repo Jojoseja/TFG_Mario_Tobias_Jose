@@ -11,6 +11,10 @@ spring:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
 
+  flyway:
+    enabled: true
+    callback-locations: classpath:db/migration
+
 
 
 logging:
