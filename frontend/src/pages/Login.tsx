@@ -7,8 +7,12 @@ function Login() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Aquí luego conectarás con backend
-    navigate("/dashboard");
+    // 🔥 Aquí luego irá llamada al backend
+    const isAuthenticated = true;
+
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -22,20 +26,12 @@ function Login() {
         <form className="login-form" onSubmit={handleLogin}>
           <div className="input-group">
             <label htmlFor="email">Correo</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="tuemail@ejemplo.com"
-            />
+            <input id="email" type="email" placeholder="tuemail@ejemplo.com" />
           </div>
 
           <div className="input-group">
             <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-            />
+            <input id="password" type="password" placeholder="••••••••" />
           </div>
 
           <button type="submit" className="login-button">
