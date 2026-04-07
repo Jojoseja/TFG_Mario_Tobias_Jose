@@ -9,6 +9,7 @@ services:
       - ./backend/.env
     environment:
       LOGGING_FILE_NAME: ${LOGGING_FILE_NAME:-/app/logs/time2focus.log}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}
     volumes:
       - ${BACKEND_LOGS_DIR:-./logs/backend}:/app/logs
     depends_on:
