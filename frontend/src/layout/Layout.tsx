@@ -1,9 +1,16 @@
-import { NavLink, Outlet } from "react-router-dom";
-import "../styles/Dashboard.css";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { IoIosLogOut } from "react-icons/io";
+import "../styles/Home.css";
 
 function Layout() {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    // Aquí luego podrás borrar token, localStorage, etc.
+    navigate("/");
+  };
+
   return (
-    <div className="dashboard-page">
+    <div className="home-page">
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="brand-icon">⏱</div>
@@ -13,8 +20,8 @@ function Layout() {
         </div>
 
         <nav className="sidebar-nav">
-          <NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-            Dashboard
+          <NavLink to="/home" className={({ isActive }) => (isActive ? "active" : "")}>
+            Home
           </NavLink>
           <NavLink to="/ajustes" className={({ isActive }) => (isActive ? "active" : "")}>
             Ajustes
@@ -22,8 +29,14 @@ function Layout() {
         </nav>
 
         <div className="sidebar-footer">
-          <p>Usuario</p>
-          <span>Sesión iniciada</span>
+          <div className="sidebar-user-info">
+            <p>Usuario</p>
+            <span>Sesión iniciada</span>
+          </div>
+          
+          <button className="logout-button" onClick={handleLogout} title="Cerrar sesión">
+            <IoIosLogOut />
+          </button>
         </div>
       </aside>
 

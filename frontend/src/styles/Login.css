@@ -10,8 +10,8 @@
     justify-content: center;
     align-items: center;
     background:
-        radial-gradient(circle at top, rgba(90, 90, 120, 0.18), transparent 30%),
-        linear-gradient(135deg, #0f1117, #181c25 60%, #11141b);
+        radial-gradient(circle at top, rgba(90, 120, 92, 0.18), transparent 30%),
+        linear-gradient(135deg, #10170fa1, #1825193f 60%, #111b13);
     font-family: Arial, Helvetica, sans-serif;
     color: #f5f7fa;
     padding: 20px;
@@ -20,7 +20,7 @@
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: rgba(24, 28, 37, 0.88);
+  background: rgba(25, 37, 24, 0.295);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 22px;
   padding: 36px 30px;
@@ -70,6 +70,21 @@
   gap: 8px;
 }
 
+.login-links{
+  font-size: small;
+  text-decoration: none;
+  color: #7c5cff;
+}
+
+.login-links a {
+  color: #21b93a;
+  text-decoration: none;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
 .input-group label {
   font-size: 0.92rem;
   color: #d7dce5;
@@ -104,7 +119,7 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  background: linear-gradient(135deg, #7c5cff, #4da8ff);
+  background: linear-gradient(135deg, #367036, #1feb0c);
   color: white;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }

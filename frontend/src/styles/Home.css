@@ -6,10 +6,10 @@ body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   background: #0d1016;
-  color: #f5f7fa;
+  color: #f6faf5;
 }
 
-.dashboard-page {
+.home-page {
   min-height: 100vh;
   display: flex;
   background:
@@ -42,7 +42,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #7c5cff, #4da8ff);
+  background: linear-gradient(135deg, #4e691b, #85ff4d);
   font-size: 24px;
   box-shadow: 0 8px 24px rgba(124, 92, 255, 0.25);
 }
@@ -50,12 +50,6 @@ body {
 .sidebar-brand h2 {
   margin: 0;
   font-size: 1rem;
-}
-
-.sidebar-brand p {
-  margin: 4px 0 0;
-  color: #95a0b2;
-  font-size: 0.85rem;
 }
 
 .sidebar-nav {
@@ -134,7 +128,7 @@ body {
 }
 
 .primary-button {
-  background: linear-gradient(135deg, #7c5cff, #4da8ff);
+  background: linear-gradient(135deg, #7dff5c3b, #6bff4d);
   color: white;
 }
 
@@ -192,17 +186,11 @@ body {
 
 .dashboard-main-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
 }
 
 .focus-panel {
-  padding: 24px;
-  grid-row: span 2;
-}
-
-.tasks-panel,
-.progress-panel {
   padding: 24px;
 }
 
@@ -227,8 +215,8 @@ body {
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(77, 168, 255, 0.12);
-  color: #8bc4ff !important;
-  border: 1px solid rgba(77, 168, 255, 0.2);
+  color: #9bfc9b !important;
+  border: 1px solid rgba(83, 255, 77, 0.2);
 }
 
 .timer-circle {
@@ -242,7 +230,7 @@ body {
   text-align: center;
   background:
     radial-gradient(circle, #1b2230 58%, transparent 59%),
-    conic-gradient(#7c5cff 0% 70%, #2a3346 70% 100%);
+    conic-gradient(#5cff72 0% 70%, #2a4630 70% 100%);
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.25);
 }
 
@@ -260,39 +248,6 @@ body {
   display: flex;
   justify-content: center;
   gap: 14px;
-}
-
-.task-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.task-item {
-  background: #131926;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 14px 16px;
-  border-radius: 14px;
-}
-
-.task-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.task-left input {
-  width: 18px;
-  height: 18px;
-}
-
-.task-left span {
-  color: #e7ebf3;
-}
-
-.task-left span.completed {
-  text-decoration: line-through;
-  color: #7f8999;
 }
 
 .progress-panel {
@@ -340,6 +295,104 @@ body {
   width: 40%;
 }
 
+.task-panel-header {
+  margin-bottom: 20px;
+}
+
+.task-panel-header h1 {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+}
+
+.task-panel-header p {
+  margin: 0;
+  color: #8f9bae;
+}
+
+.task-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.task-panel-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.task-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-panel-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.task-panel-footer input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #2b3446;
+  background: #1a2130;
+  color: white;
+  outline: none;
+}
+
+.task-panel-footer input::placeholder {
+  color: #8f9bae;
+}
+
+.sidebar-footer {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.logout-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: #1a2130;
+  color: #f6faf5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-size: 1.7rem;
+}
+
+.logout-button:hover {
+  background: #20293a;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 1100px) {
   .stats-grid {
     grid-template-columns: 1fr;
@@ -350,7 +403,7 @@ body {
   }
 
   .focus-panel {
-    grid-row: auto;
+    grid-template-columns: 1fr 1.2fr;
   }
 }
 

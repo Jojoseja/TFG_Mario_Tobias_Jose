@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
 function Login() {
@@ -11,7 +11,7 @@ function Login() {
     const isAuthenticated = true;
 
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/home");
     }
   };
 
@@ -32,16 +32,13 @@ function Login() {
           <div className="input-group">
             <label htmlFor="password">Contraseña</label>
             <input id="password" type="password" placeholder="••••••••" />
+            <p className="login-links"><Link to="/forgot-password">¿Contraseña olvidada?</Link></p>
           </div>
 
-          <button type="submit" className="login-button">
-            Entrar
-          </button>
+          <button type="submit" className="login-button">Entrar</button>
         </form>
 
-        <p className="login-footer">
-          ¿No tienes cuenta? <span>Regístrate</span>
-        </p>
+        <p className="login-footer">¿No tienes cuenta? <span className="login-links"><Link to="/register">Regístrate</Link></span></p>
       </div>
     </div>
   );
