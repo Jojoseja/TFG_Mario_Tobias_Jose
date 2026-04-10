@@ -15,6 +15,8 @@ function Home() {
     }
   };
 
+  const projectName = "Alemán"; // Esto luego vendrá del backend o contexto global
+
   return (
     <>
       <header className="dashboard-header">
@@ -65,7 +67,16 @@ function Home() {
             <h2>Sesión actual</h2>
             <span className="status-badge">En progreso</span> {/* Puedes cambiar el color del badge según el estado */ }
           </div>
-
+          <div className="container-info-pomo">
+            <div className="info-pomo">
+              <h2>Proyecto Actual:</h2>
+              <span>{projectName}</span>
+            </div>
+            <div className="info-pomo">
+              <h2>Próximo modo:</h2>
+            <span className="status-badge">Pausa Longa jeje</span> {/* Esto luego vendrá del backend o contexto global */ }
+            </div>
+          </div>
           <div className="timer-circle">
             <div>
               <h3>24:32</h3>
