@@ -1,0 +1,40 @@
+package com.jotomo.pomo.session;
+
+import com.jotomo.pomo.session.dto.SessionRequest;
+import com.jotomo.pomo.session.dto.SessionResponse;
+import com.jotomo.pomo.sessionconfiguration.SessionConfiguration;
+import com.jotomo.pomo.task.Task;
+import com.jotomo.pomo.user.UserEntity;
+import org.mapstruct.*;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+public interface SessionMapper {
+
+    @Mapping(target = "statrtedAt", source = "startedAt")
+    @Mapping(target = "sessionConfigurationId", source = "sessionConfiguration.id")
+    @Mapping(target = "taskIds", source = "tasks")
+    SessionResponse toResponse(Session session);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "startedAt", expression = "java(java.time.LocalDateTime.now())")
+    Session toEntity(SessionRequest request, UserEntity user, SessionConfiguration sessionConfiguration, List<Task> tasks);
+
+    default List<UUID> mapTasksToIds(List<Task> tasks) {
+        if (tasks == null) {
+            return new ArrayList<>();
+        }
+        return tasks.stream().map(Task::getId).toList();
+    }
+
+    default Integer map(LocalTime value) {
+        if (value == null) {
+            return null;
+        }
+        return value.toSecondOfDay() / 60;
+    }
+}
