@@ -1,4 +1,6 @@
-package com.jotomo.pomo.user;
+package com.jotomo.pomo.user.dto;
+
+import com.jotomo.pomo.user.UserRole;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

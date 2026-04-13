@@ -1,4 +1,4 @@
-package com.jotomo.pomo.sessionconfiguration;
+package com.jotomo.pomo.sessionconfiguration.dto;
 
 import java.util.UUID;
 

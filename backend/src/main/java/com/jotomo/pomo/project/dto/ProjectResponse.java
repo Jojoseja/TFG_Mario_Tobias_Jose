@@ -1,4 +1,4 @@
-package com.jotomo.pomo.project;
+package com.jotomo.pomo.project.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,6 +9,6 @@ public record ProjectResponse (
         String description,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        Long ownerId
+        UUID ownerId
 ){
 }

@@ -1,4 +1,4 @@
-package com.jotomo.pomo.user;
+package com.jotomo.pomo.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;

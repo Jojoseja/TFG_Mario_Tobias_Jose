@@ -1,4 +1,4 @@
-package com.jotomo.pomo.session;
+package com.jotomo.pomo.session.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

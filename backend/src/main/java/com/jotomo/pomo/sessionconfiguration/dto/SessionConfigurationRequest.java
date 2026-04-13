@@ -1,4 +1,4 @@
-package com.jotomo.pomo.sessionconfiguration;
+package com.jotomo.pomo.sessionconfiguration.dto;
 
 public record SessionConfigurationRequest(
         Integer workDuration,

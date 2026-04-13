@@ -1,4 +1,6 @@
-package com.jotomo.pomo.pomodoro;
+package com.jotomo.pomo.pomodoro.dto;
+
+import com.jotomo.pomo.pomodoro.SessionType;
 
 import java.util.UUID;
 

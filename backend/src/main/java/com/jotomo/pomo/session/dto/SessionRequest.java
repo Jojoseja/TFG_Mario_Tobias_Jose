@@ -1,4 +1,4 @@
-package com.jotomo.pomo.session;
+package com.jotomo.pomo.session.dto;
 
 import jakarta.validation.constraints.NotNull;
 

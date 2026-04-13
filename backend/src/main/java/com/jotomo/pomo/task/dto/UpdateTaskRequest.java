@@ -1,5 +1,7 @@
-package com.jotomo.pomo.task;
+package com.jotomo.pomo.task.dto;
 
+import com.jotomo.pomo.task.Priority;
+import com.jotomo.pomo.task.Status;
 import jakarta.validation.constraints.Size;
 
 import java.util.UUID;

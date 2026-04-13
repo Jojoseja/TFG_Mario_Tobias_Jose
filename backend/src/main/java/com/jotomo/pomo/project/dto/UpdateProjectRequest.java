@@ -1,4 +1,4 @@
-package com.jotomo.pomo.project;
+package com.jotomo.pomo.project.dto;
 
 import jakarta.validation.constraints.Size;
 
@@ -8,6 +8,6 @@ public record UpdateProjectRequest(
         String name,
 
         @Size(max = 1000)
-        String descripcion
+        String description
 ) {
 }
