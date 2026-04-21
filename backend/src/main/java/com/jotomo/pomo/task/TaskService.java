@@ -38,23 +38,49 @@ public class TaskService {
                 .toList();
     }
 
-    public List<Task> getTaskFiltered(UUID userId, UUID taskId) {
-
-        return null;
-    }
-
-    public TaskResponse createTask(UUID userId, CreateTaskRequest request, Project project) {
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getTaskFiltered(UUID userId, Status status, UUID projectId) {
         UserEntity user = getUser(userId);
 
-        taskRepository.findByOwnerAndTitleAndProject(user, request.title(), project).ifPresent(task -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Task name in this project already exists");
-        });
+        List<Task> tasks;
+        if (projectId != null && status != null) {
+            Project project = getProject(user, projectId);
+            tasks = taskRepository.findTasksByOwnerAndProjectAndStatus(user, project, status);
+        } else if (projectId != null) {
+            Project project = getProject(user, projectId);
+            tasks = taskRepository.findTasksByOwnerAndProject(user, project);
+        } else if (status != null) {
+            tasks = taskRepository.findTasksByOwnerAndStatus(user, status);
+        } else {
+            tasks = taskRepository.findTasksByOwner(user);
+        }
 
-        Task task = taskMapper.toEntity(request, user);
+        return tasks.stream()
+                .map(taskMapper::toResponse)
+                .toList();
+    }
+
+    public TaskResponse createTask(UUID userId, CreateTaskRequest request) {
+        UserEntity user = getUser(userId);
+
+        Project project = null;
+        if (request.projectId() != null) {
+            project = getProject(user, request.projectId());
+        }
+
+        Task parentTask = null;
+        if (request.parentTaskId() != null) {
+            parentTask = getTask(user, request.parentTaskId());
+        }
+
+        Task task = taskMapper.toEntity(request); // mapper solo con request
+
+        task.setOwner(user);
+        task.setProject(project);
+        task.setParentTask(parentTask);
+
         Task saved = taskRepository.save(task);
         return taskMapper.toResponse(saved);
-
-
     }
 
     public TaskResponse updateTask(UUID userId, UUID taskId, UpdateTaskRequest request) {
@@ -78,12 +104,23 @@ public class TaskService {
 
     private Task getTask(UserEntity user, UUID taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
         if (!task.getOwner().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "task does not belong to user");
         }
 
         return task;
+    }
+
+    private Project getProject(UserEntity user, UUID projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+
+        if (!project.getOwner().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Project does not belong to user");
+        }
+
+        return project;
     }
 }

@@ -1,11 +1,9 @@
 package com.jotomo.pomo.session;
 
-import com.jotomo.pomo.project.Project;
 import com.jotomo.pomo.session.dto.SessionRequest;
 import com.jotomo.pomo.session.dto.SessionResponse;
+import com.jotomo.pomo.sessionconfiguration.SessionConfiguration;
 import com.jotomo.pomo.sessionconfiguration.SessionConfigurationRepository;
-import com.jotomo.pomo.task.Task;
-import com.jotomo.pomo.task.TaskRepository;
 import com.jotomo.pomo.user.UserEntity;
 import com.jotomo.pomo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +25,6 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
-    private final TaskRepository taskRepository;
     private final SessionConfigurationRepository sessionConfigurationRepository;
     private final SessionMapper sessionMapper;
 
@@ -55,7 +53,6 @@ public class SessionService {
     }
 
 
-    // TODO: resolver user + sessionConfiguration + tasks
     public SessionResponse startSession(UUID userId, SessionRequest request) {
         UserEntity user = getUser(userId);
 
@@ -63,33 +60,42 @@ public class SessionService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User already has an active session");
         }
 
-        // 2) resolver user + sessionConfiguration + tasks
-        // 3) crear entidad Session (startedAt = now)
-        // 4) guardar
-        // 5) mapear a SessionResponse
-        return null;
+        SessionConfiguration config = sessionConfigurationRepository.findByIdAndUser(request.sessionConfigurationId(), user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Session configuration not found"));
+
+        Session session = sessionMapper.toEntity(request, user, config, List.of());
+        Session saved = sessionRepository.save(session);
+
+        return sessionMapper.toResponse(saved);
     }
 
-    // TODO: Calculo de tiempo de session. Que pasa si el usuario cierra el programa?
-    public SessionResponse finishSession(UUID userId, UUID sessionId /*, SessionFinishRequest request */) {
-        // POST /api/v1/sessions/{id}/finish
-        // 1) cargar sesión
-        // 2) validar ownership y que esté activa
-        // 3) set endedAt y métricas usadas
-        // 4) guardar
-        // 5) mapear a SessionResponse
-        return null;
+    public SessionResponse finishSession(UUID userId, UUID sessionId, SessionRequest request) {
+        UserEntity user = getUser(userId);
+
+        Session session = getSession(user, sessionId);
+        if (session.getEndedAt() != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Session already finished");
+        }
+
+        session.setEndedAt(request.endedAt());
+        session.setWorkMinutesUsed(toLocalTime(request.workMinutesUsed()));
+        session.setShortBreakDurationUsed(toLocalTime(request.shortBreakDurationUsed()));
+        session.setLongBreakDurationUsed(toLocalTime(request.longBreakDurationUsed()));
+
+
+        Session saved = sessionRepository.save(session);
+
+        return sessionMapper.toResponse(saved);
     }
 
-    // helpers:
     private UserEntity getUser(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    private Session getSession(UserEntity user, UUID projectId) {
-        return sessionRepository.findById(projectId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+    private Session getSession(UserEntity user, UUID sessionId) {
+        return sessionRepository.findByIdAndUser(sessionId, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found"));
     }
 
     private boolean hasActiveSession(UserEntity user) {
@@ -97,10 +103,9 @@ public class SessionService {
                 .anyMatch(s -> s.getEndedAt() == null);
     }
 
-
-    //TODO: implementar metodo para iniciar una session
-    private List<Task> resolveTasks(UserEntity user, List<UUID> taskIds) {
-        return null;
+    private LocalTime toLocalTime(Integer minutes) {
+        if (minutes == null) return null;
+        return LocalTime.ofSecondOfDay(minutes * 60L);
     }
 
-    }
+}

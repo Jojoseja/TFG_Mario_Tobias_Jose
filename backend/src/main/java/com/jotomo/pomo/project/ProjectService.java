@@ -4,7 +4,9 @@ import com.jotomo.pomo.project.dto.CreateProjectRequest;
 import com.jotomo.pomo.project.dto.ProjectResponse;
 import com.jotomo.pomo.project.dto.UpdateProjectRequest;
 import com.jotomo.pomo.task.Task;
+import com.jotomo.pomo.task.TaskMapper;
 import com.jotomo.pomo.task.TaskRepository;
+import com.jotomo.pomo.task.dto.TaskResponse;
 import com.jotomo.pomo.user.UserEntity;
 import com.jotomo.pomo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final ProjectMapper projectMapper;
+    private final TaskMapper taskMapper;
 
     @Transactional(readOnly = true)
     public List<ProjectResponse> getProjects(UUID userId) {
@@ -35,10 +38,13 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public List<Task> getProjectTasks(UUID userId, UUID projectId) {
+    public List<TaskResponse> getProjectTasks(UUID userId, UUID projectId) {
         UserEntity user = getUser(userId);
         Project project = getProject(user, projectId);
-        return taskRepository.findTasksByOwnerAndProject(user, project);
+        return taskRepository.findTasksByOwnerAndProject(user, project)
+                .stream()
+                .map(taskMapper::toResponse)
+                .toList();
     }
 
     public ProjectResponse createProject(UUID userId, CreateProjectRequest request) {
@@ -55,6 +61,7 @@ public class ProjectService {
 
     public ProjectResponse updateProject(UUID userId, UUID projectId, UpdateProjectRequest request) {
         UserEntity user = getUser(userId);
+
         Project project = getProject(user, projectId);
 
         projectMapper.updateEntity(request, project);

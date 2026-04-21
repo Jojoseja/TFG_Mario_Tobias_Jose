@@ -4,6 +4,7 @@ import com.jotomo.pomo.task.Priority;
 import com.jotomo.pomo.task.Status;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record UpdateTaskRequest (
@@ -18,5 +19,8 @@ public record UpdateTaskRequest (
 
         UUID projectId,
         UUID parentTaskId,
-        Boolean archived
+
+        Boolean archived,
+        LocalDateTime completedAt,
+        LocalDateTime archivedAt
 ){}

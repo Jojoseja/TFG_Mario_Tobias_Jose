@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface SessionRepository extends JpaRepository<Session, UUID> {
     Optional<Session> findById(UUID id);
 
+    Optional<Session> findByIdAndUser(UUID id, UserEntity user);
+
     List<Session> findSessionsByUser(UserEntity user);
 
     List<Session> findSessionsByUserAndStartedAt(UserEntity user, LocalDateTime startedAt);

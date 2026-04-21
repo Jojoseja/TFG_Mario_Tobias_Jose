@@ -15,6 +15,10 @@ public interface SessionConfigurationMapper {
     @Mapping(target = "sessions", ignore = true)
     SessionConfiguration toEntity(SessionConfigurationRequest request, UserEntity user);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "sessions", ignore = true)
     void updateEntity(SessionConfigurationRequest request, @MappingTarget SessionConfiguration entity);
 
 

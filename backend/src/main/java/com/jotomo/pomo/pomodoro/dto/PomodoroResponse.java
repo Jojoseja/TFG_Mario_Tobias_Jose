@@ -6,8 +6,8 @@ import java.util.UUID;
 
 public record PomodoroResponse(
         UUID id,
-        Integer orderIndex,
+        int orderIndex,
         SessionType sessionType,
-        Boolean completed,
+        boolean completed,
         UUID sessionId
 ) {}

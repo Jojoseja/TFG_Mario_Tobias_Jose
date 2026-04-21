@@ -1,7 +1,6 @@
 package com.jotomo.pomo.sessionconfiguration;
 
 
-import com.jotomo.pomo.session.SessionRepository;
 import com.jotomo.pomo.sessionconfiguration.dto.SessionConfigurationRequest;
 import com.jotomo.pomo.sessionconfiguration.dto.SessionConfigurationResponse;
 import com.jotomo.pomo.user.UserEntity;
