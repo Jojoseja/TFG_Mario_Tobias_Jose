@@ -1,5 +1,6 @@
 package com.jotomo.pomo.sessionconfiguration;
 
+import com.jotomo.pomo.session.Session;
 import com.jotomo.pomo.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,4 +11,6 @@ public interface SessionConfigurationRepository extends JpaRepository<SessionCon
     Optional<SessionConfiguration> findById(UUID id);
 
     Optional<SessionConfiguration> findByUser(UserEntity user);
+
+    Optional<SessionConfiguration> findByIdAndUser(UUID id, UserEntity user);
 }
