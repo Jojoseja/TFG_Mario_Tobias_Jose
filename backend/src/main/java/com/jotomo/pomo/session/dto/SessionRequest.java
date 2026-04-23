@@ -1,5 +1,6 @@
 package com.jotomo.pomo.session.dto;
 
+import com.jotomo.pomo.pomodoro.dto.PomodoroRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
