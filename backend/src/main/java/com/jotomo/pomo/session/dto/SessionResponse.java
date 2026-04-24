@@ -16,5 +16,4 @@ public record SessionResponse (
         List<UUID> taskIds,
         List<PomodoroResponse> pomodoros,
         UUID sessionConfigurationId
-){
-}
+){}
