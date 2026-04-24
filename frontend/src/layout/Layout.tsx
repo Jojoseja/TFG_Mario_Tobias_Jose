@@ -2,7 +2,8 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import "../styles/Home.css";
 import { useState } from "react";
-import { IoChevronForward, IoChevronDown, IoAdd } from "react-icons/io5";
+import { IoChevronForward, IoAdd } from "react-icons/io5";
+import NewProjectModal from "../components/NewProjectModal";
 
 function Layout() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ function Layout() {
     "Inglés",
     "Operaciones multidimensionales con cáculos algebráicos, trigonométricos y logarítmicos",
   ]);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   
   return (
     <div className="home-page">
@@ -38,29 +40,34 @@ function Layout() {
                 onClick={()=> setProjectsOpen(!projectsOpen)} 
                 type="button">
                   Proyectos
-                <span className="projects-icon">{projectsOpen ? <IoChevronDown /> : <IoChevronForward />}</span>
-              </button>
-              <button className="add-project-button"
-                onClick={() => alert("Funcionalidad de añadir proyecto aún no implementada")}
+                    <span className={`projects-icon ${projectsOpen ? "open" : ""}`}>
+                      <IoChevronForward />
+                    </span>
+                  </button>
+              
+              <button 
+                className="add-project-button"
+                onClick={() => setIsProjectModalOpen(true)}
                 type="button"
                 title="Añadir nuevo proyecto">
                   <IoAdd />
               </button>
             </div>
-            {projectsOpen && (
-              <div className="projects-list">
-                {projects.map((project, index) => (
-                  <button
-                    key={index}
-                    className="project-item"
-                    type="button"
-                  >
-                    {project}
-                  </button>
-                ))}
+
+            <div className={`projects-list-wrapper ${projectsOpen ? "open" : ""}`}>
+                <div className="projects-list">
+                  {projects.map((project, index) => (
+                    <button
+                      key={index}
+                      className="project-item"
+                      type="button"
+                    >
+                      {project}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
+            </div>
           <NavLink to="/ajustes" className={({ isActive }) => (isActive ? "active" : "")}>
             Ajustes
           </NavLink>
@@ -81,6 +88,10 @@ function Layout() {
       <main className="dashboard-content">
         <Outlet />
       </main>
+      <NewProjectModal
+        open={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+      />
     </div>
   );
 }
