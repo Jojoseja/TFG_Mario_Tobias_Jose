@@ -9,5 +9,4 @@ public record UpdateProjectRequest(
 
         @Size(max = 1000)
         String description
-) {
-}
+){}

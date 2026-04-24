@@ -24,5 +24,4 @@ public record SessionRequest (
         Integer longBreakDurationUsed,
 
         List<PomodoroRequest> pomodoros
-){
-}
+){}

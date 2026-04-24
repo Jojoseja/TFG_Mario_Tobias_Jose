@@ -1,12 +1,13 @@
 package com.jotomo.pomo.pomodoro.dto;
 
-import com.jotomo.pomo.pomodoro.SessionType;
+import com.jotomo.pomo.pomodoro.enums.SessionType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
 public record PomodoroRequest(
+
         @NotNull
         UUID id,
 
@@ -23,4 +24,3 @@ public record PomodoroRequest(
         @NotNull
         UUID sessionId
 ){}
-
