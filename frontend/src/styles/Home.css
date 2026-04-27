@@ -115,20 +115,6 @@ body {
   gap: 10px;
 }
 
-.projects-button {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 8px;
-  background: var(--bg-soft);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
 .projects-toggle {
   flex: 1;
   background: transparent;
@@ -136,12 +122,12 @@ body {
   color: var(--text-soft);
   padding: 12px 14px;
   border-radius: 12px;
-  transition: 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
   font-weight: 500;
   font-size: 1rem;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
   cursor: pointer;
   text-align: left;
 }
@@ -154,7 +140,11 @@ body {
 .projects-icon {
   display: flex;
   align-items: center;
-  font-size: 0.95rem;
+  transition: transform 0.25s ease;
+}
+
+.projects-icon.open {
+  transform: rotate(90deg);
 }
 
 .add-project-button {
@@ -186,6 +176,23 @@ body {
   gap: 6px;
 }
 
+.projects-list-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    max-height 0.3s ease,
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.projects-list-wrapper.open {
+  max-height: 300px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .project-item {
   background: transparent;
   border: none;
@@ -194,13 +201,14 @@ body {
   border-radius: 10px;
   cursor: pointer;
   text-align: left;
-  transition: 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
   font-size: 0.95rem;
 }
 
 .project-item:hover {
-  background: var(--hover);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-soft);
+  transform: translateX(4px);
 }
 
 .sidebar-footer {
@@ -319,7 +327,6 @@ body {
 }
 
 .stat-card,
-.panel,
 .focus-panel,
 .task-panel {
   background: var(--bg-panel);
@@ -401,9 +408,6 @@ body {
 .status-badge {
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(115, 216, 255, 0.10);
-  color: var(--accent-cyan) !important;
-  border: 1px solid rgba(115, 216, 255, 0.22);
 }
 
 .timer-circle {
@@ -415,9 +419,6 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  background:
-    radial-gradient(circle, #131925 58%, transparent 59%),
-    conic-gradient(#73d8ff 0% 45%, #283245 45% 100%);
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.28);
 }
 
@@ -436,51 +437,6 @@ body {
   display: flex;
   justify-content: center;
   gap: 14px;
-}
-
-.progress-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.progress-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.progress-info {
-  display: flex;
-  justify-content: space-between;
-  color: #d8deea;
-  font-size: 0.95rem;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 10px;
-  background: #1a2230;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--accent-gradient);
-}
-
-.fill-80 {
-  width: 80%;
-}
-
-.fill-60 {
-  width: 60%;
-}
-
-.fill-40 {
-  width: 40%;
 }
 
 .task-panel-header {
@@ -528,7 +484,69 @@ body {
 }
 
 .task-list input[type="checkbox"] {
-  accent-color: var(--accent-cyan);
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--input-border);
+  border-radius: 6px;
+  background: #202b3f;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: 0.2s ease;
+  flex-shrink: 0;
+}
+
+.task-list input[type="checkbox"]:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(115, 216, 255, 0.08);
+}
+
+.task-list input[type="checkbox"]:checked {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.task-list input[type="checkbox"]::before {
+  content: "✓";
+  color: #081018;
+  font-size: 12px;
+  font-weight: bold;
+  transform: scale(0);
+  transition: 0.15s ease;
+}
+
+.task-list input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.task-list input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+.task-list button{
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.task-list button:hover {
+  background: var(--hover);
+  color: var(--accent-cyan);
 }
 
 .task-panel-footer {
@@ -574,10 +592,6 @@ body {
 
   .dashboard-main-grid {
     grid-template-columns: 1fr;
-  }
-
-  .focus-panel {
-    grid-template-columns: 1fr 1.2fr;
   }
 }
 
