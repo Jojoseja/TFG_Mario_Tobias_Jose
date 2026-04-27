@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class UserRepositoryTest {
+class UserRepositoryUnitTest {
 
     @Autowired
     private UserRepository userRepository;
