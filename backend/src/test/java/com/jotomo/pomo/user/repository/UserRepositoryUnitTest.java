@@ -1,6 +1,6 @@
 package com.jotomo.pomo.user.repository;
 
-import com.jotomo.pomo.user.enums.UserRole;
+import com.jotomo.pomo.testdata.TestSetUp;
 import com.jotomo.pomo.user.model.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.NoSuchElementException;
 
+import static com.jotomo.pomo.testdata.TestSetUp.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -19,34 +20,20 @@ class UserRepositoryUnitTest {
 
     private UserEntity userEntity;
 
-    private static final String USER_USERNAME = "sampleusername";
-
-    private static final String USER_PASSWORD = "userpassword123";
-
-    private static final String USER_EMAIL = "sample@test.com";
-
-    private static final boolean USER_ENABLED = true;
-
-    private static final UserRole USER_ROLE = UserRole.USER;
-
-    private static final String NON_MATCHING_EMAIL = "nonmatching@email.com";
-
     @BeforeEach
     void setUp() {
-        userEntity = UserEntity
-                .builder()
-                .username(USER_USERNAME)
-                .password(USER_PASSWORD)
-                .email(USER_EMAIL)
-                .enabled(USER_ENABLED)
-                .role(USER_ROLE)
-                .build();
+        userEntity = TestSetUp.createUser();
         userRepository.save(userEntity);
     }
 
     @Test
     void existsByEmail_returnTrue_whenEmailExists() {
         assertTrue(userRepository.existsByEmail(USER_EMAIL));
+    }
+
+    @Test
+    void existsByEmail_returnFalse_whenEmailDoesNotExist() {
+        assertFalse(userRepository.existsByEmail(NON_MATCHING_EMAIL));
     }
 
     @Test
