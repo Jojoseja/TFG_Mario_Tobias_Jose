@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
+import "../styles/PomodoroTimer.css";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
 type PomodoroTimerProps = {
   onModeChange: (mode: SessionStatus) => void;
+  variant?: "home" | "project";
 };
 
-function PomodoroTimer({ onModeChange }: PomodoroTimerProps) {
+function PomodoroTimer({ 
+  onModeChange, 
+  variant = "home" 
+}: PomodoroTimerProps) {
   const workSeconds = 5;
   const shortRestSeconds = 3;
   const longRestSeconds = 4;
@@ -82,7 +87,6 @@ function PomodoroTimer({ onModeChange }: PomodoroTimerProps) {
   const progressBarPercent =
     ((currentTotalSeconds - seconds) / currentTotalSeconds) * 100;
 
-  // Preguntar si queremos texto debajo del contador o dejar solo las etiquetas de arriba
   const currentText =
     sessionStatus === "work"
       ? "Time to focus"
@@ -91,7 +95,7 @@ function PomodoroTimer({ onModeChange }: PomodoroTimerProps) {
       : "Descanso largo";
 
   return (
-    <>
+    <div className={`pomodoro-timer pomodoro-timer--${variant}`}>
       <div
         className="timer-circle"
         style={{
@@ -120,7 +124,7 @@ function PomodoroTimer({ onModeChange }: PomodoroTimerProps) {
           Finalizar
         </button>
       </div>
-    </>
+    </div>
   );
 }
 

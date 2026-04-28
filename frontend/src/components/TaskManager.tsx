@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
+import "../styles/TaskManager.css";
+import type { Task } from "../types/task";
 
+type TaskManagerProps = {
+  variant?: "home" | "project";
+};
 
-function TaskManager(){
+function TaskManager({variant = "home"}: TaskManagerProps) {
   
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
 
   const handleAddTask = () => {
   if (newTask.trim() === "") return;
 
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    const taskToAdd: Task = {
+      id: Date.now(),
+      title: newTask.trim(),
+      createdAt: new Date(),
+      completed: false,
+      projectId: 1,
+    };
+
+    setTasks((prevTasks) => [...prevTasks, taskToAdd]);
     setNewTask("");
   };
   const handleDeleteTask = (indexToDelete: number) => {
@@ -19,8 +32,18 @@ function TaskManager(){
     );
   };
 
+  const handleCompleteTask = (indexToComplete: number) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task, index) =>
+        index === indexToComplete
+          ? { ...task, completed: !task.completed, completedAt: task.completed ? undefined : new Date() }
+          : task
+      )
+    );
+  };
+
   return(
-      <div className="task-panel">
+      <div className={`task-panel task-panel--${variant}`}>
         <div className="task-panel-header">
           <h1>Lista de tareas</h1>
           <p>Apunta tus objetivos de la sesión.</p>
@@ -30,8 +53,10 @@ function TaskManager(){
           <ul className="task-list">
             {tasks.map((task, index) => (
               <li key={index}>
-                <input type="checkbox" id={`task-${index}`} />
-                <label htmlFor={`task-${index}`}>{task}</label>
+                <input type="checkbox" id={`task-${index}`} onClick={() => handleCompleteTask(index)}/>
+                <label htmlFor={`task-${index}`}>{task.title}</label>
+                {task.createdAt && <span className="task-created-at">Creada el {(task.createdAt).toLocaleDateString()} a las {(task.createdAt).toLocaleTimeString()}</span>}
+                {task.completedAt && <span className="task-completed-at">Completada el {(task.completedAt).toLocaleDateString()} a las {(task.completedAt).toLocaleTimeString()}</span>}
                 <button onClick={() => handleDeleteTask(index)}>
                   <MdDelete/>
                 </button>
@@ -52,7 +77,7 @@ function TaskManager(){
               }
             }}
           />
-          <button className="primary-button" onClick={handleAddTask}>
+          <button className="primary-button-task" onClick={handleAddTask}>
             Agregar tarea
           </button>
         </div>

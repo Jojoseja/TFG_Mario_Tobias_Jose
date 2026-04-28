@@ -1,0 +1,10 @@
+.project-content{
+    display: flex;
+    height: 100%;
+    
+}
+
+.columna {
+  flex: 1;
+}
+

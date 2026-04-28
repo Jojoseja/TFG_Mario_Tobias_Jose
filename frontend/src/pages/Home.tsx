@@ -69,9 +69,6 @@ function Home() {
           color: "rgba(235, 10, 10, 0.815)",
           border: "1px solid rgba(255, 115, 115, 0.22)",
         };
-  
-  //Array de tareas
-  const tareas = Array();
 
   return (
     <>
@@ -140,7 +137,7 @@ function Home() {
           <PomodoroTimer onModeChange={setSessionStatus} />
         </div>
 
-        <TaskManager/>
+        <TaskManager variant="home"/>
       </section>
     </>
   );
