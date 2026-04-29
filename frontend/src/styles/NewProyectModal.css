@@ -27,7 +27,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .modal-header h2 {
@@ -68,6 +68,7 @@
 .modal-field label {
   font-size: 0.92rem;
   font-weight: 600;
+  padding-top: 8px;
   color: var(--text-soft);
 }
 

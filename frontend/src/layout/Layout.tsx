@@ -1,25 +1,57 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
-import "../styles/Home.css";
-import { useState } from "react";
 import { IoChevronForward, IoAdd } from "react-icons/io5";
+import { use, useState } from "react";
+
+import "../styles/Home.css";
 import NewProjectModal from "../components/NewProjectModal";
+import type { Project } from "../types/project";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 function Layout() {
   const navigate = useNavigate();
+
+  const [projectsOpen, setProjectsOpen] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([
+    {
+      id: 1,
+      name: "Alemán",
+      description: "Proyecto para aprender alemán",
+      createdAt: "2024-01-01T00:00:00.000Z",
+      updatedAt: "2024-01-01T00:00:00.000Z",
+      tasks: [],
+    }
+  ]);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+
   const handleLogout = () => {
     // Aquí luego podrás borrar token, localStorage, etc.
     navigate("/");
   };
 
-  const [projectsOpen, setProjectsOpen] = useState(false);
-  const [projects, setProjects] = useState([
-    "Alemán",
-    "Inglés",
-    "Operaciones multidimensionales con cáculos algebráicos, trigonométricos y logarítmicos",
-  ]);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  
+  const handleCreateProject = (newProject: Project) => {
+    setProjects((prevProjects) => [...prevProjects, newProject]);
+
+    // Abrir lista para que se vea el proyecto recién creado
+    setProjectsOpen(true);
+
+  };
+
+  const handleDeleteProject = (projectToDelete: number) => {
+    setProjects((prevProjects) =>
+      prevProjects.filter((project) => project.id !== projectToDelete)
+    );
+
+    // Luego aquí irá el DELETE al backend:
+    // DELETE http://localhost:8080/api/v1/projects/${projectToDelete}
+  };
+
+  const handleEditProject = (projectToEdit: number) => {
+    // Aquí abriría un modal parecido al de creación, pero con los datos del proyecto ya cargados.
+    // Luego haría un PUT al backend para actualizar el proyecto.
+    console.log("Editar proyecto", projectToEdit);
+  };
+
   return (
     <div className="home-page">
       <aside className="sidebar">
@@ -31,44 +63,78 @@ function Layout() {
         </div>
 
         <nav className="sidebar-nav">
-          <NavLink to="/home" className={({ isActive }) => (isActive ? "active" : "")}>
+          <NavLink
+            to="/home"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
             Home
           </NavLink>
+
           <div className="projects-section">
             <div className="projects-header">
-              <button className="projects-toggle" 
-                onClick={()=> setProjectsOpen(!projectsOpen)} 
-                type="button">
-                  Proyectos
-                    <span className={`projects-icon ${projectsOpen ? "open" : ""}`}>
-                      <IoChevronForward />
-                    </span>
-                  </button>
-              
-              <button 
+              <button
+                className="projects-toggle"
+                onClick={() => setProjectsOpen(!projectsOpen)}
+                type="button"
+              >
+                Proyectos
+                <span className={`projects-icon ${projectsOpen ? "open" : ""}`}>
+                  <IoChevronForward />
+                </span>
+              </button>
+
+              <button
                 className="add-project-button"
                 onClick={() => setIsProjectModalOpen(true)}
                 type="button"
-                title="Añadir nuevo proyecto">
-                  <IoAdd />
+                title="Añadir nuevo proyecto"
+              >
+                <IoAdd />
               </button>
             </div>
 
             <div className={`projects-list-wrapper ${projectsOpen ? "open" : ""}`}>
-                <div className="projects-list">
-                  {projects.map((project, index) => (
-                    <button
-                      key={index}
-                      className="project-item"
-                      type="button"
-                    >
-                      {project}
-                    </button>
-                  ))}
-                </div>
+              <div className="projects-list">
+                {projects.length === 0 ? (
+                  <p className="empty-projects">No hay proyectos todavía</p>
+                ) : (
+                  projects.map((project) => (
+                    <div key={project.id} className="project-item-row">
+                      <button
+                        key={project.id}
+                        className="project-item"
+                        type="button"
+                        onClick={() => navigate(`/proyecto/${project.id}`)}
+                      >
+                        {project.name}
+                      </button>
+                      <button
+                        className="edit-project-button"
+                        type="button"
+                        title="Editar proyecto"
+                        onClick={() => console.log("Editar proyecto", project.id)}
+                      >
+                        <MdEdit />
+                      </button>
+                      <button
+                        className="delete-project-button"
+                        type="button"
+                        title="Eliminar proyecto"
+                        onClick={() => handleDeleteProject(project.id)}
+                      >
+                        <MdDelete />
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
-          <NavLink to="/ajustes" className={({ isActive }) => (isActive ? "active" : "")}>
+          </div>
+
+          <NavLink
+            to="/ajustes"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
             Ajustes
           </NavLink>
         </nav>
@@ -78,19 +144,26 @@ function Layout() {
             <p>Usuario</p>
             <span>Sesión iniciada</span>
           </div>
-          
-          <button className="logout-button" onClick={handleLogout} title="Cerrar sesión">
+
+          <button
+            className="logout-button"
+            onClick={handleLogout}
+            title="Cerrar sesión"
+            type="button"
+          >
             <IoIosLogOut />
           </button>
         </div>
       </aside>
 
       <main className="dashboard-content">
-        <Outlet />
+        <Outlet context={{projects}}/>
       </main>
+
       <NewProjectModal
         open={isProjectModalOpen}
         onClose={() => setIsProjectModalOpen(false)}
+        onCreateProject={handleCreateProject}
       />
     </div>
   );

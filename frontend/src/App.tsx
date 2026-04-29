@@ -5,6 +5,7 @@ import Ajustes from "./pages/Ajustes";
 import Layout from "./layout/Layout";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+import ProjectPage from "./pages/ProjectPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="login" replace />} />
           <Route path="home" element={<Home />} />
+          <Route path="proyecto/:projectId" element={<ProjectPage />} />
           <Route path="ajustes" element={<Ajustes />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
