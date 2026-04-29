@@ -1,17 +1,13 @@
-package com.jotomo.pomo.user.dto.auth;
+package com.jotomo.pomo.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record LoginRequest(
+public record ForgotPasswordRequest(
 
         @NotBlank
         @Email
         @Size(max = 100)
-        String email,
-
-        @NotBlank
-        @Size(min = 8, max = 255)
-        String password
+        String email
 ){}

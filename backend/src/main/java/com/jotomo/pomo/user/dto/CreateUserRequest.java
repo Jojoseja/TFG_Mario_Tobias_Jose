@@ -1,13 +1,13 @@
-package com.jotomo.pomo.user.dto.auth;
+package com.jotomo.pomo.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record RegisterRequest(
+public record CreateUserRequest(
 
         @NotBlank
-        @Size(min = 1, max = 50)
+        @Size(min = 3, max = 255)
         String username,
 
         @NotBlank
@@ -18,4 +18,4 @@ public record RegisterRequest(
         @NotBlank
         @Size(min = 8, max = 255)
         String password
-){}
+) { }

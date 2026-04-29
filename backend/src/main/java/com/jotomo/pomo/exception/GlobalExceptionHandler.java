@@ -28,4 +28,31 @@ public class GlobalExceptionHandler {
         problemDetail.setDetail("An unexpected error occurred");
         return problemDetail;
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex){
+        log.warn("Error: {}", ex.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Invalid request");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException ex){
+        log.warn("User not found: {}", ex.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Invalid request");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(IncorrectPassword.class)
+    public ProblemDetail handleIncorrectPasswordException(IncorrectPassword ex){
+        log.warn("Incorrect Password: {}", ex.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Invalid request");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
 }
