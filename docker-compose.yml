@@ -15,9 +15,9 @@ services:
       context: ./backend
     container_name: t2f-backend
     ports:
-      - "${BACKEND_PORT}:8080"
+      - "${BACKEND_PORT}:${SERVER_PORT}"
     env_file:
-      - ./backend/.env
+      - .env
     environment:
       LOGGING_FILE_NAME: ${LOGGING_FILE_NAME:-/app/logs/time2focus.log}
       APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}

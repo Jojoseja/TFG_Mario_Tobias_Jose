@@ -15,8 +15,9 @@ app:
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
   flyway:
-    enabled: true
-    callback-locations: classpath:db/migration
+    enabled: ${APP_FLYWAY_ENABLED:true}
+    callback-locations: ${APP_FLYWAY_CALLBACKLOCATION:classpath:db/migration}
+
 
 
 
