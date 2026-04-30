@@ -3,9 +3,11 @@ package com.jotomo.pomo.session.controller;
 import com.jotomo.pomo.session.dto.SessionRequest;
 import com.jotomo.pomo.session.dto.SessionResponse;
 import com.jotomo.pomo.session.service.SessionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,37 +25,37 @@ public class SessionController {
     private final SessionService sessionService;
 
     @GetMapping(PATH_ID)
-    public SessionResponse getSession(
+    public ResponseEntity<SessionResponse> getSession(
             @RequestHeader(USER_ID_HEADER) UUID userId,
-            @PathVariable UUID sessionId
+            @PathVariable("id") UUID sessionId
     ){
-        return sessionService.getSession(userId, sessionId);
+        return ResponseEntity.ok(sessionService.getSession(userId, sessionId));
     }
 
     @GetMapping
-    public List<SessionResponse> getSessions(
+    public ResponseEntity<List<SessionResponse>> getSessions(
             @RequestHeader(USER_ID_HEADER) UUID userId,
             @RequestParam(required = false) LocalDateTime from,
             @RequestParam(required = false) LocalDateTime to
     ) {
-        return sessionService.getSessionsFiltered(userId, from, to);
+        return ResponseEntity.ok(sessionService.getSessionsFiltered(userId, from, to));
     }
 
     @PostMapping("/start")
     @ResponseStatus(HttpStatus.CREATED)
-    public SessionResponse startSession(
+    public ResponseEntity<SessionResponse> startSession(
             @RequestHeader(USER_ID_HEADER) UUID userId,
-            @RequestBody SessionRequest request
+            @Valid @RequestBody SessionRequest request
     ){
-        return sessionService.startSession(userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(sessionService.startSession(userId, request));
     }
 
-    @PostMapping("/finish")
-    public SessionResponse finishSession(
+    @PostMapping(PATH_ID + "/finish")
+    public ResponseEntity<SessionResponse> finishSession(
             @RequestHeader(USER_ID_HEADER) UUID userId,
-            @PathVariable UUID sessionId,
-            @RequestBody SessionRequest request
+            @PathVariable("id") UUID sessionId,
+            @Valid @RequestBody SessionRequest request
     ){
-        return sessionService.finishSession(userId, sessionId, request);
+        return ResponseEntity.ok(sessionService.finishSession(userId, sessionId, request));
     }
 }

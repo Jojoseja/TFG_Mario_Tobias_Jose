@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,45 +27,46 @@ public class ControllerProject {
 
     private final ProjectService projectService;
 
-    @GetMapping(PATH_ID)
-    public List<ProjectResponse> getProjects(
+    @GetMapping()
+    public ResponseEntity<List<ProjectResponse>> getProjects(
             @RequestHeader(USER_ID_HEADER) UUID id
     ) {
-        return projectService.getProjects(id);
+        return ResponseEntity.ok(projectService.getProjects(id));
     }
 
     @GetMapping(PATH_ID + "/tasks")
-    public List<TaskResponse> getProjectTasks(
+    public ResponseEntity<List<TaskResponse>> getProjectTasks(
             @RequestHeader(USER_ID_HEADER) UUID id,
-            @PathVariable UUID projectId
+            @PathVariable("id") UUID projectId
     ) {
-        return projectService.getProjectTasks(id, projectId);
+        return ResponseEntity.ok(projectService.getProjectTasks(id, projectId));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProjectResponse createProject(
+    public ResponseEntity<ProjectResponse> createProject(
             @RequestHeader(USER_ID_HEADER) UUID id,
             @Valid @RequestBody CreateProjectRequest request
     ){
-        return projectService.createProject(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(id, request));
     }
 
     @PatchMapping(PATH_ID)
-    public ProjectResponse updateProject(
+    public ResponseEntity<ProjectResponse> updateProject(
             @RequestHeader(USER_ID_HEADER) UUID id,
-            @PathVariable UUID projectId,
+            @PathVariable("id") UUID projectId,
             @Valid @RequestBody UpdateProjectRequest request
     ){
-        return projectService.updateProject(id, projectId, request);
+        return ResponseEntity.ok(projectService.updateProject(id, projectId, request));
     }
 
     @DeleteMapping(PATH_ID)
-    public void deleteProject(
+    public ResponseEntity<Void> deleteProject(
             @RequestHeader(USER_ID_HEADER) UUID id,
-            @PathVariable UUID projectId
+            @PathVariable("id") UUID projectId
     ){
         projectService.deleteProject(id, projectId);
+        return ResponseEntity.noContent().build();
     }
 
 }
