@@ -11,4 +11,4 @@ public record UpdateUserMeRequest(
         @Email
         @Size(max = 100)
         String email
-){}
+){ }
