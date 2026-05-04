@@ -96,9 +96,9 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.toResponse(taskRepository.save(task));
     }
 
-    public void deleteTask(UUID userId, UUID projectId) {
+    public void deleteTask(UUID userId, UUID taskId) {
         UserEntity user = getUser(userId);
-        Task task = getTask(user, projectId);
+        Task task = getTask(user, taskId);
         taskRepository.delete(task);
     }
 

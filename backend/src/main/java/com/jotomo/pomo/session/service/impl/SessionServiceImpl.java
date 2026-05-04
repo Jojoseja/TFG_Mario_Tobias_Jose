@@ -36,6 +36,14 @@ public class SessionServiceImpl implements SessionService {
     private final SessionMapper sessionMapper;
 
     @Transactional(readOnly = true)
+    public SessionResponse getSession(UUID userId, UUID sessionId) {
+        UserEntity user = getUser(userId);
+        Session session = getSession(user, sessionId);
+
+        return sessionMapper.toResponse(session);
+    }
+
+    @Transactional(readOnly = true)
     public List<SessionResponse> getSessionsFiltered(UUID userId, LocalDateTime from, LocalDateTime to) {
         if (from != null && to != null && from.isAfter(to)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "'from' cannot be after 'to'");
@@ -50,15 +58,6 @@ public class SessionServiceImpl implements SessionService {
                 .map(sessionMapper::toResponse)
                 .toList();
     }
-
-    @Transactional(readOnly = true)
-    public SessionResponse getSession(UUID userId, UUID sessionId) {
-        UserEntity user = getUser(userId);
-        Session session = getSession(user, sessionId);
-
-        return sessionMapper.toResponse(session);
-    }
-
 
     public SessionResponse startSession(UUID userId, SessionRequest request) {
         UserEntity user = getUser(userId);

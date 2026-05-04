@@ -16,4 +16,6 @@ public class ApiConstants {
     public static final String POMODORO = BASE_PATH + "/pomodoro";
 
     public static final String PATH_ID = "/{id}";
+
+    public static final String USER_ID_HEADER = "X-User-Id";
 }
