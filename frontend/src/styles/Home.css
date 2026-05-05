@@ -35,6 +35,46 @@ body {
   color: var(--text);
 }
 
+body.light-mode .home-page {
+    background-color: #f4f6fb;
+    color: #111827;
+  }
+
+  body.light-mode .sidebar {
+    background-color: #ffffff;
+    color: #111827;
+  }
+
+  body.light-mode .dashboard-content {
+    background-color: #f8fafc;
+    color: #111827;
+  }
+
+  body.light-mode .stat-card,
+  body.light-mode .focus-panel {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+  }
+
+  body.light-mode .stat-card h3,
+  body.light-mode .stat-card p,
+  body.light-mode .sidebar-brand h2,
+  body.light-mode .sidebar-user-info p,
+  body.light-mode .sidebar-user-info span {
+    color: #111827;
+  }
+
+  body.light-mode .sidebar-nav a,
+  body.light-mode .projects-toggle {
+    color: #111827;
+  }
+
+  body.light-mode .theme-toggle-button {
+    background-color: #111827;
+    color: #f9fafb;
+  }
+
 .home-page {
   min-height: 100vh;
   display: flex;
@@ -289,6 +329,25 @@ body {
 .sidebar-user-info {
   display: flex;
   flex-direction: column;
+}
+
+.theme-toggle-button{
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.theme-toggle-button:hover {
+  background-color: var(--hover);
+  color: var(--accent-cyan);
 }
 
 .logout-button {

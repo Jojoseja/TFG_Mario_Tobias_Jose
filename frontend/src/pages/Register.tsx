@@ -1,21 +1,100 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
+import { useState } from "react";
+import { ApiConstants } from "../constants/ApiConstants";
 
 function Register() {
   const navigate = useNavigate();
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-    // 🔥 Aquí luego irá llamada al backend
-    const isAuthenticated = true;
+  const [notification, setNotification] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
-    if (isAuthenticated) {
-      navigate("/home");
+  //TODO: Falta hacer que cuando salta un error, le diga al usuario que ha fallado, tanto como si es por contraseñas o por usuario ya existente.
+  const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault(); //Cancela la acción por defecto del formulario
+
+     // Validación básica de campos
+    if (!email || !username || !password || !confirmPassword) {
+
+      setNotification({
+        type: "error",
+        text: "Por favor, completa todos los campos."
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+      
+      return;
+    }
+
+    if (password !== confirmPassword) {
+    setNotification({
+      type: "error",
+      text: "Las contraseñas no coinciden."
+    });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+    return;
+    }
+
+    try {
+      const response = await fetch(ApiConstants.USER_PATH, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error creando usuario:", response.status, errorText);
+        setNotification({
+          type: "error",
+          text: "Error al registrar el usuario. Por favor, intenta nuevamente."
+        });
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
+
+        return;
+      }
+      
+      setNotification({
+        type: "success",
+        text: "Usuario registrado exitosamente."
+      });
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error de conexión:", error);
     }
   };
 
   return (
+    <>
+      {notification && (
+        <div className={`notification-banner ${notification.type}`}>
+          {notification.text}
+        </div>
+      )}
+
     <div className="login-page">
       <div className="login-card">
         <div className="login-brand">
@@ -26,30 +105,55 @@ function Register() {
         <form className="login-form" onSubmit={handleRegister}>
           <div className="input-group">
             <label htmlFor="email">Correo</label>
-            <input id="email" type="email" placeholder="tuemail@ejemplo.com" />
+            <input
+              id="email"
+              type="email"
+              placeholder="tuemail@ejemplo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
           <div className="input-group">
             <label htmlFor="username">Usuario</label>
-            <input id="username" type="text" placeholder="Tu nombre de usuario" />
+            <input
+              id="username"
+              type="text"
+              placeholder="Tu nombre de usuario"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
 
           <div className="input-group">
             <label htmlFor="password">Contraseña</label>
-            <input id="password" type="password" placeholder="••••••••" />
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
           <div className="input-group">
             <label htmlFor="confirmPassword">Confirmar Contraseña</label>
-            <input id="confirmPassword" type="password" placeholder="••••••••" />
+            <input 
+              id="confirmPassword" 
+              type="password" 
+              placeholder="••••••••" 
+              value={confirmPassword} 
+              onChange={(e) => setConfirmPassword(e.target.value)} 
+            />
           </div>
-
+          
           <button type="submit" className="login-button">Registrar</button>
         </form>
 
         <p className="login-footer">¿Ya tienes cuenta? <span className="login-links"><Link to="/login">Inicia sesión</Link></span></p>
       </div>
     </div>
+    </>
   );
 }
 

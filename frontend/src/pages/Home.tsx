@@ -2,6 +2,7 @@ import "../styles/Home.css";
 import { useState } from "react";
 import PomodoroTimer from "../components/PomodoroTimer";
 import TaskManager from "../components/TaskManager";
+import type { User } from "../types/user";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
@@ -9,6 +10,9 @@ function Home() {
   const [backendMessage, setBackendMessage] = useState("");
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("work");
 
+  const userStorage = localStorage.getItem("user");
+  const user: User | null = userStorage ? JSON.parse(userStorage) : null;
+  
   const testBackend = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/v1/hello");
@@ -74,14 +78,8 @@ function Home() {
     <>
       <header className="dashboard-header">
         <div>
-          <h1>Bienvenido de nuevo, 'user'</h1>
+          <h1>Bienvenido de nuevo, {user?.username || "Usuario"}</h1>
           <p>Gestiona tu tiempo y mantén el foco en tus objetivos.</p>
-        </div>
-
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button className="secondary-button" onClick={testBackend}>
-            Probar backend ⚡
-          </button>
         </div>
       </header>
 
