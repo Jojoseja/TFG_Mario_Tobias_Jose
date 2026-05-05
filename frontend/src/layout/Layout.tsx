@@ -1,12 +1,15 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import { IoChevronForward, IoAdd } from "react-icons/io5";
-import { use, useState } from "react";
-
+import { useEffect, useState } from "react";
 import "../styles/Home.css";
 import NewProjectModal from "../components/NewProjectModal";
 import type { Project } from "../types/project";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDarkMode, MdDelete, MdEdit } from "react-icons/md";
+import type { User } from "../types/user";
+import { CiLight } from "react-icons/ci";
+
+//TODO: Hay que hacer bien el modo claro
 
 function Layout() {
   const navigate = useNavigate();
@@ -20,13 +23,25 @@ function Layout() {
       createdAt: "2024-01-01T00:00:00.000Z",
       updatedAt: "2024-01-01T00:00:00.000Z",
       tasks: [],
+      pomodoroConfig: {
+        workMinutes: 25,
+        breakMinutes: 5
+      }
     }
   ]);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
+  const storedUser = localStorage.getItem("user");
+
+  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
+
+   const [lightMode, setLightMode] = useState(() => {
+    return localStorage.getItem("theme") === "light";
+  });
+
   const handleLogout = () => {
-    // Aquí luego podrás borrar token, localStorage, etc.
-    navigate("/");
+    localStorage.removeItem("user");
+     navigate("/login");
   };
 
   const handleCreateProject = (newProject: Project) => {
@@ -51,6 +66,16 @@ function Layout() {
     // Luego haría un PUT al backend para actualizar el proyecto.
     console.log("Editar proyecto", projectToEdit);
   };
+
+  useEffect(() => {
+  if (lightMode) {
+    document.body.classList.add("light-mode");
+    localStorage.setItem("theme", "light");
+  } else {
+    document.body.classList.remove("light-mode");
+    localStorage.setItem("theme", "dark");
+  }
+  }, [lightMode]);
 
   return (
     <div className="home-page">
@@ -141,9 +166,17 @@ function Layout() {
 
         <div className="sidebar-footer">
           <div className="sidebar-user-info">
-            <p>Usuario</p>
-            <span>Sesión iniciada</span>
+            <p>{user?.username}</p>
           </div>
+          
+          <button 
+            className="theme-toggle-button"
+            title="Establecer modo claro/oscuro"
+            type="button"
+            onClick={() => setLightMode(!lightMode)}
+          >
+            {lightMode ? <CiLight /> : <MdDarkMode />}
+          </button>
 
           <button
             className="logout-button"

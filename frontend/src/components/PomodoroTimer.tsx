@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "../styles/PomodoroTimer.css";
+import { FaGear } from "react-icons/fa6";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
@@ -106,6 +107,12 @@ function PomodoroTimer({
         <div>
           <h3>{formatTime(seconds)}</h3>
           <p>{currentText}</p>
+          <button
+            className="pomo-settings-button"
+            onClick={() => console.log("Settings clicked")}
+          >
+            <FaGear />
+          </button>
         </div>
       </div>
 

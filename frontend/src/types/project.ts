@@ -6,5 +6,9 @@ export interface Project {
     description: string, 
     createdAt: string, 
     updatedAt: string, 
-    tasks: Task[]
+    tasks: Task[],
+    pomodoroConfig: {
+        workMinutes: number,
+        breakMinutes: number
+    }
 }
