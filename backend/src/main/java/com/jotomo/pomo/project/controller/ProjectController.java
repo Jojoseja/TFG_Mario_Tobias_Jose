@@ -3,7 +3,6 @@ package com.jotomo.pomo.project.controller;
 import com.jotomo.pomo.project.dto.CreateProjectRequest;
 import com.jotomo.pomo.project.dto.ProjectResponse;
 import com.jotomo.pomo.project.dto.UpdateProjectRequest;
-import com.jotomo.pomo.project.model.Project;
 import com.jotomo.pomo.project.service.ProjectService;
 import com.jotomo.pomo.task.dto.TaskResponse;
 import jakarta.validation.Valid;
@@ -18,12 +17,11 @@ import java.util.UUID;
 
 import static com.jotomo.pomo.constants.ApiConstants.*;
 
-
 @RestController
 @RequestMapping(PROJECT_PATH)
 @RequiredArgsConstructor
 @Slf4j
-public class ControllerProject {
+public class ProjectController {
 
     private final ProjectService projectService;
 
@@ -47,7 +45,7 @@ public class ControllerProject {
     public ResponseEntity<ProjectResponse> createProject(
             @RequestHeader(USER_ID_HEADER) UUID id,
             @Valid @RequestBody CreateProjectRequest request
-    ){
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(id, request));
     }
 
@@ -56,7 +54,7 @@ public class ControllerProject {
             @RequestHeader(USER_ID_HEADER) UUID id,
             @PathVariable("id") UUID projectId,
             @Valid @RequestBody UpdateProjectRequest request
-    ){
+    ) {
         return ResponseEntity.ok(projectService.updateProject(id, projectId, request));
     }
 
@@ -64,7 +62,7 @@ public class ControllerProject {
     public ResponseEntity<Void> deleteProject(
             @RequestHeader(USER_ID_HEADER) UUID id,
             @PathVariable("id") UUID projectId
-    ){
+    ) {
         projectService.deleteProject(id, projectId);
         return ResponseEntity.noContent().build();
     }
