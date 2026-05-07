@@ -3,7 +3,6 @@ package com.jotomo.pomo.testdata;
 import com.jotomo.pomo.task.enums.Priority;
 import com.jotomo.pomo.task.enums.Status;
 import com.jotomo.pomo.user.enums.UserRole;
-import com.jotomo.pomo.user.model.UserEntity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -33,7 +32,7 @@ public class TestSetUp {
     public static final String PROJECT_DESCRIPTION = "Project Description";
     public static final String NEW_PROJECT_NAME = "New Project Name";
 
-    public static final LocalDateTime SESSION_STARTED_AT = LocalDateTime.of(10,10,10,10,10,10);
+    public static final LocalDateTime SESSION_STARTED_AT = LocalDateTime.of(10, 10, 10, 10, 10, 10);
 
     public static final int SESSIONCONFIGURATION_WORKDURATION = 25;
     public static final int SESSIONCONFIGURATION_SHORTBREAKDURATION = 5;

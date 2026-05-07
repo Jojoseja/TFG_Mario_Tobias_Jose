@@ -8,7 +8,6 @@ import com.jotomo.pomo.project.mapper.ProjectMapper;
 import com.jotomo.pomo.project.model.Project;
 import com.jotomo.pomo.project.repository.ProjectRepository;
 import com.jotomo.pomo.project.service.ProjectService;
-import com.jotomo.pomo.task.dto.TaskResponse;
 import com.jotomo.pomo.task.mapper.TaskMapper;
 import com.jotomo.pomo.task.models.Task;
 import com.jotomo.pomo.task.repository.TaskRepository;
@@ -51,12 +50,12 @@ class ProjectServiceImplUnitTest {
 
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
 
     }
 
     @Test
-    void getProject_ReturnsList_WhenUserHasProjects(){
+    void getProject_ReturnsList_WhenUserHasProjects() {
         userEntity = userRepository.save(userEntity);
         projectService.getProjects(userEntity.getId());
         userEntity.getProjects().add(project);
@@ -123,7 +122,7 @@ class ProjectServiceImplUnitTest {
     }
 
     @Test
-    void createProject_ShouldSaveToDatabase_WhenRequestIsValid(){
+    void createProject_ShouldSaveToDatabase_WhenRequestIsValid() {
         userEntity = userRepository.save(userEntity);
         CreateProjectRequest request = defaultCreateProjectRequest();
 
@@ -131,7 +130,7 @@ class ProjectServiceImplUnitTest {
     }
 
     @Test
-    void createProject_ThrowsResponseStatusException_WhenNameAlreadyExists(){
+    void createProject_ThrowsResponseStatusException_WhenNameAlreadyExists() {
         userEntity = userRepository.save(userEntity);
         CreateProjectRequest request = defaultCreateProjectRequest();
         projectService.createProject(userEntity.getId(), request);

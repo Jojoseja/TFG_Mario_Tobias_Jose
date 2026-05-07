@@ -8,9 +8,9 @@ import com.jotomo.pomo.project.mapper.ProjectMapper;
 import com.jotomo.pomo.project.model.Project;
 import com.jotomo.pomo.project.repository.ProjectRepository;
 import com.jotomo.pomo.project.service.ProjectService;
+import com.jotomo.pomo.task.dto.TaskResponse;
 import com.jotomo.pomo.task.mapper.TaskMapper;
 import com.jotomo.pomo.task.repository.TaskRepository;
-import com.jotomo.pomo.task.dto.TaskResponse;
 import com.jotomo.pomo.user.model.UserEntity;
 import com.jotomo.pomo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -57,7 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(taskMapper::toResponse)
                 .toList();
     }
-    
+
     @Transactional(readOnly = true)
     public List<TaskResponse> getProjectTasks(UUID userId, ProjectRequest request) {
         UserEntity user = getUser(userId);
@@ -69,7 +68,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<ProjectResponse> getProjectByUserAndName(UUID userId, ProjectRequest request){
+    public Optional<ProjectResponse> getProjectByUserAndName(UUID userId, ProjectRequest request) {
         UserEntity user = getUser(userId);
         return projectRepository.findByOwnerAndName(user, request.name())
                 .map(projectMapper::toResponse);
@@ -94,7 +93,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 
         projectRepository.findByOwnerAndName(user, request.name()).ifPresent(searchedProject -> {
-            if (!searchedProject.getName().equals(project.getName())){
+            if (!searchedProject.getName().equals(project.getName())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Project name already exists");
             }
         });
@@ -109,7 +108,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = getProject(user, name);
 
         projectRepository.findByOwnerAndName(user, request.name()).ifPresent(searchedProject -> {
-            if (!searchedProject.getName().equals(project.getName())){
+            if (!searchedProject.getName().equals(project.getName())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Project name already exists");
             }
         });
@@ -147,8 +146,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         return project;
     }
-    
-    private Project getProject(UserEntity user, String projectName){
+
+    private Project getProject(UserEntity user, String projectName) {
         Project project = projectRepository.findByOwnerAndName(user, projectName)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
 

@@ -6,7 +6,7 @@ import com.jotomo.pomo.task.models.Task;
 import static com.jotomo.pomo.testdata.TestSetUp.*;
 
 public class TaskFactory {
-    public static Task defaultTask(){
+    public static Task defaultTask() {
         return Task.builder()
                 .title(TASK_TITLE)
                 .archived(TASK_ARCHIVED)
@@ -15,7 +15,7 @@ public class TaskFactory {
                 .build();
     }
 
-    public static TaskResponse defaultTaskResponse(){
+    public static TaskResponse defaultTaskResponse() {
         return new TaskResponse(
                 null,
                 TASK_TITLE,

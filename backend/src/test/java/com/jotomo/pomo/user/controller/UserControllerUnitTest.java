@@ -1,7 +1,6 @@
 package com.jotomo.pomo.user.controller;
 
 import com.jotomo.pomo.exception.UserNotFoundException;
-import com.jotomo.pomo.testdata.TestSetUp;
 import com.jotomo.pomo.user.dto.CreateUserRequest;
 import com.jotomo.pomo.user.dto.UserResponse;
 import com.jotomo.pomo.user.model.UserEntity;
@@ -46,7 +45,7 @@ class UserControllerUnitTest {
         userResponse = userService.findByEmail(SECOND_EMAIL).get();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(userResponse.email() ,response.getBody().email());
+        assertEquals(userResponse.email(), response.getBody().email());
     }
 
     @Test

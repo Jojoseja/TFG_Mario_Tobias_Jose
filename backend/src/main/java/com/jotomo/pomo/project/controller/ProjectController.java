@@ -4,7 +4,6 @@ import com.jotomo.pomo.project.dto.CreateProjectRequest;
 import com.jotomo.pomo.project.dto.ProjectRequest;
 import com.jotomo.pomo.project.dto.ProjectResponse;
 import com.jotomo.pomo.project.dto.UpdateProjectRequest;
-import com.jotomo.pomo.project.model.Project;
 import com.jotomo.pomo.project.service.ProjectService;
 import com.jotomo.pomo.task.dto.TaskResponse;
 import jakarta.validation.Valid;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.jotomo.pomo.constants.ApiConstants.*;
@@ -40,7 +38,7 @@ public class ProjectController {
     public ResponseEntity<ProjectResponse> getProjectByName(
             @RequestHeader(USER_ID_HEADER) UUID id,
             @Valid @RequestBody ProjectRequest request
-            ) {
+    ) {
         return projectService.getProjectByUserAndName(id, request)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(

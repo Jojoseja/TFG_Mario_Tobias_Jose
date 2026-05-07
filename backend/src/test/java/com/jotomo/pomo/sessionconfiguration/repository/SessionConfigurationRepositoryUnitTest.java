@@ -1,7 +1,6 @@
 package com.jotomo.pomo.sessionconfiguration.repository;
 
 import com.jotomo.pomo.sessionconfiguration.model.SessionConfiguration;
-import com.jotomo.pomo.testdata.TestSetUp;
 import com.jotomo.pomo.user.model.UserEntity;
 import com.jotomo.pomo.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
-import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
-import static org.junit.jupiter.api.Assertions.*;
 import static com.jotomo.pomo.testdata.TestSetUp.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class SessionConfigurationRepositoryUnitTest {
