@@ -1,6 +1,7 @@
 package com.jotomo.pomo.project.mapper;
 
 import com.jotomo.pomo.project.dto.CreateProjectRequest;
+import com.jotomo.pomo.project.dto.ProjectRequest;
 import com.jotomo.pomo.project.dto.ProjectResponse;
 import com.jotomo.pomo.project.dto.UpdateProjectRequest;
 import com.jotomo.pomo.project.model.Project;
@@ -19,6 +20,14 @@ public interface ProjectMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     Project toEntity(CreateProjectRequest request, UserEntity user);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    @Mapping(target = "owner", source = "user")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
+    Project toEntity(ProjectRequest request, UserEntity user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)

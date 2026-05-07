@@ -26,9 +26,12 @@ public class TestSetUp {
     public static final String TASK_TITLE = "Task Title";
     public static final Status TASK_STATUS = Status.TODO;
     public static final Priority TASK_PRIORITY = Priority.LOW;
+    public static final boolean TASK_ARCHIVED = false;
     public static final Status NON_MATCHING_TASK_STATUS = Status.IN_PROGRESS;
 
     public static final String PROJECT_NAME = "Project Name";
+    public static final String PROJECT_DESCRIPTION = "Project Description";
+    public static final String NEW_PROJECT_NAME = "New Project Name";
 
     public static final LocalDateTime SESSION_STARTED_AT = LocalDateTime.of(10,10,10,10,10,10);
 
@@ -36,15 +39,4 @@ public class TestSetUp {
     public static final int SESSIONCONFIGURATION_SHORTBREAKDURATION = 5;
     public static final int SESSIONCONFIGURATION_LONGBREAKDURATION = 15;
     public static final int SESSIONCONFIGURATION_CYCLESBEFOREBREAK = 3;
-
-    public static UserEntity createUser(){
-        return UserEntity
-                .builder()
-                .username(USER_USERNAME)
-                .password(USER_PASSWORD)
-                .email(USER_EMAIL)
-                .enabled(USER_ENABLED)
-                .role(USER_ROLE)
-                .build();
-    }
 }

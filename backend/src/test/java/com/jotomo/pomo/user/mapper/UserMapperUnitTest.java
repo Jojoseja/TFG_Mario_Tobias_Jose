@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest

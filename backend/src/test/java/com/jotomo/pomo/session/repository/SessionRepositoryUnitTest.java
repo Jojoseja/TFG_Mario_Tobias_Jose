@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.jotomo.pomo.testdata.TestSetUp.SESSION_STARTED_AT;
-import static com.jotomo.pomo.testdata.TestSetUp.createUser;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest

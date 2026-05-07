@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
-import static com.jotomo.pomo.testdata.TestSetUp.USER_ENABLED;
-import static com.jotomo.pomo.testdata.TestSetUp.USER_ROLE;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -41,7 +40,7 @@ public class TaskRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        userEntity = TestSetUp.createUser();
+        userEntity = createUser();
         userRepository.save(userEntity);
     }
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static com.jotomo.pomo.testdata.TestSetUp.*;
 
@@ -27,7 +28,7 @@ class SessionConfigurationRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        userEntity = TestSetUp.createUser();
+        userEntity = createUser();
         userRepository.save(userEntity);
     }
 

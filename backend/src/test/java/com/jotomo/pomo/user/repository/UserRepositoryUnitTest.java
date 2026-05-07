@@ -10,6 +10,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import java.util.NoSuchElementException;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -22,7 +23,7 @@ class UserRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        userEntity = TestSetUp.createUser();
+        userEntity = createUser();
         userRepository.save(userEntity);
     }
 

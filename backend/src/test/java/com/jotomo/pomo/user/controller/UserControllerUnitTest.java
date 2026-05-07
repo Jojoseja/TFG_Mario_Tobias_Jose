@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -31,7 +32,7 @@ class UserControllerUnitTest {
 
     @BeforeEach
     void setUp() {
-        user = TestSetUp.createUser();
+        user = createUser();
         createUserRequest = new CreateUserRequest(
                 SECOND_USERNAME,
                 SECOND_EMAIL,
