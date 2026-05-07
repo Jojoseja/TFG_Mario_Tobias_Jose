@@ -3,6 +3,7 @@ import "../styles/Login.css";
 import { useState } from "react";
 import { ApiConstants } from "../constants/ApiConstants";
 
+//TODO: Estoy haciendo que cuando creas al usuario le cree una configuración por defecto tambien. Luego en los ajustes de usuario o en la rueda de ajustes del pomodoro se podrán modificar determinados parámetros de la configuración de la sesión
 function Register() {
   const navigate = useNavigate();
 

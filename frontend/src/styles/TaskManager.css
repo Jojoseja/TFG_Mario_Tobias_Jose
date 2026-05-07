@@ -15,8 +15,6 @@
   flex-direction: column;
   height: 100%;
   text-align: center;
-  border-left: solid;
-  border-color: var(--accent-gradient);
 }
 
 .task-panel-header {

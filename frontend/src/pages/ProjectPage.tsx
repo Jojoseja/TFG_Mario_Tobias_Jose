@@ -18,7 +18,7 @@ function ProjectPage() {
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("work");
   
   const project = projects.find(
-    (project) => project.id === Number(projectId)
+    (project) => project.id === String(projectId)
   );
 
   if (!project) {
@@ -33,7 +33,7 @@ function ProjectPage() {
     <>
       <header>
           <h1>{project.name}</h1>
-          <p>Aqui va la descripción del proyecto</p>
+          <p>{project.description}</p>
       </header>
       <section className="project-content">
         <div className="columna">
