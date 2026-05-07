@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 import { useState } from "react";
 import { ApiConstants } from "../constants/ApiConstants";
-import type { User } from "../types/user";
+import type { User } from "../types/User";
 
 function Login() {
   const navigate = useNavigate();

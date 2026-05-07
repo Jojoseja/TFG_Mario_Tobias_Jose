@@ -2,7 +2,7 @@ import "../styles/Home.css";
 import { useState } from "react";
 import PomodoroTimer from "../components/PomodoroTimer";
 import TaskManager from "../components/TaskManager";
-import type { User } from "../types/user";
+import type { User } from "../types/User";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
@@ -25,6 +25,7 @@ function Home() {
   };
 
   //Variable para el proyecto actual en el que te encuentras
+  //TODO: Cambiar esto porque cargue el projecto y ponga el nombre del último proyecto trabajado, aun no sé como hacerlo, además que tampoco sé donde almacenar el proyecto (o si traerlo con una consulta)
   const projectName = "Alemán";
 
   //Colores de sesión actual

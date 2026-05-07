@@ -187,7 +187,7 @@ body.light-mode .home-page {
   transform: rotate(90deg);
 }
 
-.add-project-button {
+.project-button {
   width: 38px;
   height: 38px;
   border: none;
@@ -203,7 +203,7 @@ body.light-mode .home-page {
   flex-shrink: 0;
 }
 
-.add-project-button:hover {
+.project-button:hover {
   background: var(--hover);
   color: var(--accent-cyan);
 }

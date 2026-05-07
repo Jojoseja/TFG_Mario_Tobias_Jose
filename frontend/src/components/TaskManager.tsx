@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import "../styles/TaskManager.css";
-import type { Task } from "../types/task";
+import type { Task } from "../types/Task";
 
 type TaskManagerProps = {
   variant?: "home" | "project";
