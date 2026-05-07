@@ -15,6 +15,7 @@ public class TestSetUp {
     public static final boolean USER_ENABLED = true;
     public static final UserRole USER_ROLE = UserRole.USER;
     public static final String NON_MATCHING_EMAIL = "nonmatching@email.com";
+    public static final String NON_MATCHING_PASSWORD = "nonmatchingpassword123";
 
     public static final String TASK_TITLE = "Task Title";
     public static final Status TASK_STATUS = Status.TODO;
