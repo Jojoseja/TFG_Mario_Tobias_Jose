@@ -61,7 +61,7 @@
   height: 18px;
   border: 1.5px solid var(--input-border);
   border-radius: 6px;
-  background: #202b3f;
+  background: var(--bg-soft);
   cursor: pointer;
   display: grid;
   place-content: center;
@@ -132,14 +132,14 @@
   border-radius: 12px;
   border: 1px solid var(--input-border);
   background: var(--input-bg);
-  color: white;
+  color: var(--text);
   outline: none;
   transition: 0.2s ease;
 }
 
 .task-panel-footer input:focus {
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(115, 216, 255, 0.14);
+  box-shadow: 0 0 0 3px var(--input-focus);
 }
 
 .task-panel-footer input::placeholder {

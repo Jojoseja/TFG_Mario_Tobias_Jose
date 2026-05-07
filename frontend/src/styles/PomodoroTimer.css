@@ -1,4 +1,4 @@
-.timer-circle{
+.timer-circle {
   width: 260px;
   height: 260px;
   margin: 20px auto 28px;
@@ -72,10 +72,10 @@
 
 .primary-button {
   background: var(--accent-gradient);
-  color: rgb(255, 255, 255);
+  color: var(--button-text);
   box-shadow:
-    0 10px 22px rgba(115, 216, 255, 0.10),
-    0 10px 22px rgba(177, 130, 255, 0.10);
+          0 10px 22px rgba(115, 216, 255, 0.1),
+          0 10px 22px rgba(177, 130, 255, 0.1);
 }
 
 .primary-button:hover {
@@ -84,11 +84,11 @@
 }
 
 .secondary-button {
-  background: var(--bg-soft);
-  color: #e7ebf3;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
   border: 1px solid var(--input-border);
 }
 
 .secondary-button:hover {
-  background: #171e2b;
+  background: var(--btn-secondary-bg-hover);
 }

@@ -1,7 +1,7 @@
 .pomo-settings-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 10, 20, 0.72);
+  background: var(--modal-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,12 +11,12 @@
 
 .pomo-settings-modal {
   width: min(440px, 100%);
-  background: #131925;
-  border: 1px solid #283245;
+  background: var(--bg-panel-strong);
+  border: 1px solid var(--input-border);
   border-radius: 24px;
   padding: 1.4rem;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
-  color: #f6f8fb;
+  color: var(--text);
 }
 
 .pomo-settings-header {
@@ -33,7 +33,7 @@
 
 .pomo-settings-header p {
   margin: 0.35rem 0 0;
-  color: #9ba7bd;
+  color: var(--text-muted);
   font-size: 0.92rem;
 }
 
@@ -48,16 +48,16 @@
 
   border: none;
   border-radius: 999px;
-  background: #20293a;
-  color: #f6f8fb;
+  background: var(--modal-close-bg);
+  color: var(--text);
 
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
 .pomo-settings-close:hover {
-  background: #2b3548;
-  color: #73d8ff;
+  background: var(--modal-close-bg-hover);
+  color: var(--accent-cyan);
   transform: scale(1.05);
 }
 
@@ -75,7 +75,7 @@
 }
 
 .pomo-settings-field label {
-  color: #d9e2f2;
+  color: var(--text-soft);
   font-weight: 600;
   font-size: 0.95rem;
 }
@@ -89,21 +89,22 @@
 .pomo-settings-input-row input {
   flex: 1;
   min-width: 0;
-  background: #0f1522;
-  color: #f6f8fb;
-  border: 1px solid #2b3548;
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--input-border);
   border-radius: 14px;
   padding: 0.8rem 0.9rem;
   outline: none;
 }
 
 .pomo-settings-input-row input:focus {
-  border-color: #73d8ff;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px var(--input-focus);
 }
 
 .pomo-settings-input-row span {
   min-width: 86px;
-  color: #9ba7bd;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
@@ -124,27 +125,28 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #0f1522;
-  border: 1px solid #2b3548;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 14px;
   padding: 0 0.75rem;
 }
 
 .pomo-time-input:focus-within {
-  border-color: #73d8ff;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px var(--input-focus);
 }
 
 .pomo-time-input input {
   width: 100%;
   min-width: 0;
   background: transparent;
-  color: #f6f8fb;
+  color: var(--text);
   border: none;
   padding: 0.8rem 0;
   outline: none;
 }
 
 .pomo-time-input span {
-  color: #9ba7bd;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }

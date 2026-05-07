@@ -1,93 +1,14 @@
-:root {
-  --bg: #080b11;
-  --bg-soft: #0d1219;
-  --bg-panel: rgba(14, 18, 26, 0.92);
-  --bg-panel-strong: rgba(12, 16, 23, 0.96);
-
-  --border: rgba(255, 255, 255, 0.07);
-  --border-soft: rgba(255, 255, 255, 0.05);
-
-  --text: #f4f7fb;
-  --text-soft: #c7d0dc;
-  --text-muted: #95a1b2;
-  --text-faint: #778396;
-
-  --accent-cyan: #73d8ff;
-  --accent-violet: #b182ff;
-  --accent-gradient: linear-gradient(135deg, #73d7ffc2, #b182ff);
-
-  --hover: rgba(255, 255, 255, 0.05);
-  --hover-strong: rgba(255, 255, 255, 0.08);
-
-  --input-bg: #111722;
-  --input-border: #253042;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
-body.light-mode .home-page {
-    background-color: #f4f6fb;
-    color: #111827;
-  }
-
-  body.light-mode .sidebar {
-    background-color: #ffffff;
-    color: #111827;
-  }
-
-  body.light-mode .dashboard-content {
-    background-color: #f8fafc;
-    color: #111827;
-  }
-
-  body.light-mode .stat-card,
-  body.light-mode .focus-panel {
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    color: #111827;
-  }
-
-  body.light-mode .stat-card h3,
-  body.light-mode .stat-card p,
-  body.light-mode .sidebar-brand h2,
-  body.light-mode .sidebar-user-info p,
-  body.light-mode .sidebar-user-info span {
-    color: #111827;
-  }
-
-  body.light-mode .sidebar-nav a,
-  body.light-mode .projects-toggle {
-    color: #111827;
-  }
-
-  body.light-mode .theme-toggle-button {
-    background-color: #111827;
-    color: #f9fafb;
-  }
 
 .home-page {
   min-height: 100vh;
   display: flex;
-  background:
-    radial-gradient(circle at top left, rgba(115, 216, 255, 0.08), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(177, 130, 255, 0.08), transparent 24%),
-    linear-gradient(135deg, #07090e, #0b1017 60%, #0d1219);
+  background: var(--page-bg);
 }
 
 .sidebar {
   width: 260px;
   min-height: 100vh;
-  background: rgba(11, 15, 22, 0.96);
+  background: var(--sidebar-bg);
   border-right: 1px solid var(--border);
   padding: 28px 20px;
   display: flex;
@@ -145,7 +66,7 @@ body.light-mode .home-page {
 .sidebar-nav a.active {
   background: linear-gradient(135deg, rgba(115, 216, 255, 0.16), rgba(177, 130, 255, 0.16));
   color: var(--accent-cyan);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--active-border);
 }
 
 .projects-header {
@@ -259,7 +180,7 @@ body.light-mode .home-page {
 }
 
 .project-item-row .project-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--hover-strong);
   color: var(--text-soft);
   transform: translateX(4px);
 }
@@ -296,7 +217,6 @@ body.light-mode .home-page {
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
   font-size: 1rem;
-  ;
 }
 
 .project-item-row .delete-project-button:hover {
@@ -305,7 +225,7 @@ body.light-mode .home-page {
 }
 
 .sidebar-footer {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-subtle);
   border: 1px solid var(--border-soft);
   border-radius: 16px;
   padding: 16px;
@@ -366,7 +286,7 @@ body.light-mode .home-page {
 }
 
 .logout-button:hover {
-  background: #171e2b;
+  background: var(--btn-secondary-bg-hover);
   color: var(--accent-violet);
   transform: translateY(-1px);
 }
@@ -487,12 +407,30 @@ body.light-mode .home-page {
   border-radius: 999px;
 }
 
+.status-badge.status-badge--work {
+  background: var(--badge-work-bg);
+  color: var(--badge-work-text);
+  border: 1px solid var(--badge-work-border);
+}
+
+.status-badge.status-badge--shortRest {
+  background: var(--badge-rest-bg);
+  color: var(--badge-rest-text);
+  border: 1px solid var(--badge-rest-border);
+}
+
+.status-badge.status-badge--longRest {
+  background: var(--badge-long-rest-bg);
+  color: var(--badge-long-rest-text);
+  border: 1px solid var(--badge-long-rest-border);
+}
+
 .backend-response {
   margin-bottom: 20px;
   padding: 14px 18px;
   border-radius: 12px;
-  background: rgba(115, 216, 255, 0.08);
-  border: 1px solid rgba(115, 216, 255, 0.16);
+  background: var(--info-bg);
+  border: 1px solid var(--info-border);
   color: var(--accent-cyan);
   font-weight: 500;
 }

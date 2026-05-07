@@ -10,7 +10,6 @@ import type { User } from "../types/User";
 import { CiLight } from "react-icons/ci";
 import { ApiConstants } from "../constants/ApiConstants";
 
-// TODO: Hay que hacer bien el modo claro
 // TODO: Hay que editar el css para que cuando estes en un proyecto se quede marcado su nombre
 // TODO: La notificación que sale debería ser algo más acorde a la estética de la web y no un pop up de google
 

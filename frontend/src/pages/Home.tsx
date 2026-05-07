@@ -28,26 +28,6 @@ function Home() {
   //TODO: Cambiar esto porque cargue el projecto y ponga el nombre del último proyecto trabajado, aun no sé como hacerlo, además que tampoco sé donde almacenar el proyecto (o si traerlo con una consulta)
   const projectName = "Alemán";
 
-  //Colores de sesión actual
-  const currentBadgeStyle =
-    sessionStatus === "work"
-      ? {
-          background: "rgba(243, 63, 50, 0.1)",
-          color: "rgba(235, 10, 10, 0.815)",
-          border: "1px solid rgba(255, 115, 115, 0.22)",
-        }
-      : sessionStatus === "shortRest"
-      ? {
-          background: "rgba(115, 216, 255, 0.10)",
-          color: "#73d8ff",
-          border: "1px solid rgba(115, 216, 255, 0.22)",
-        }
-      : {
-          background: "rgba(168, 85, 247, 0.10)",
-          color: "#a855f7",
-          border: "1px solid rgba(168, 85, 247, 0.22)",
-        };
-  
   //Texto de la sesión actual
   const currentBadgeText =
     sessionStatus === "work"
@@ -62,18 +42,6 @@ function Home() {
       ? "Descanso"
       : "Pomodoro";
 
-  const nextBadgeStyle =
-    sessionStatus === "work"
-      ? {
-          background: "rgba(115, 216, 255, 0.10)",
-          color: "#73d8ff",
-          border: "1px solid rgba(115, 216, 255, 0.22)",
-        }
-      : {
-          background: "rgba(243, 63, 50, 0.1)",
-          color: "rgba(235, 10, 10, 0.815)",
-          border: "1px solid rgba(255, 115, 115, 0.22)",
-        };
 
   return (
     <>
@@ -114,7 +82,7 @@ function Home() {
         <div className="focus-panel">
           <div className="panel-header">
             <h2>Modo actual</h2>
-            <span className="status-badge" style={currentBadgeStyle}>
+            <span className={`status-badge status-badge--${sessionStatus}`}>
               {currentBadgeText}
             </span>
           </div>
@@ -127,9 +95,15 @@ function Home() {
 
             <div className="info-pomo">
               <h2>Próximo modo</h2>
-              <span className="status-badge" style={nextBadgeStyle}>
+              <span
+                className={`status-badge ${
+                    sessionStatus === "work"
+                        ? "status-badge--shortRest"
+                        : "status-badge--work"
+                }`}
+              >
                 {nextBadgeText}
-              </span>
+            </span>
             </div>
           </div>
 
