@@ -13,9 +13,18 @@ public interface ProjectMapper {
     @Mapping(target = "ownerId", source = "owner.id")
     ProjectResponse toResponse(Project project);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "owner", source = "user")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
     Project toEntity(CreateProjectRequest request, UserEntity user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
     void updateEntity(UpdateProjectRequest request, @MappingTarget Project project);
 }
