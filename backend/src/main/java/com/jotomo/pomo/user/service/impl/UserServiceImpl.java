@@ -2,6 +2,8 @@ package com.jotomo.pomo.user.service.impl;
 
 import com.jotomo.pomo.exception.UserAlreadyExistsException;
 import com.jotomo.pomo.exception.UserNotFoundException;
+import com.jotomo.pomo.sessionconfiguration.factory.SessionConfigurationFactory;
+import com.jotomo.pomo.sessionconfiguration.model.SessionConfiguration;
 import com.jotomo.pomo.user.dto.CreateUserRequest;
 import com.jotomo.pomo.user.dto.UpdateUserMeRequest;
 import com.jotomo.pomo.user.dto.UserResponse;
@@ -23,8 +25,8 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
+    private final SessionConfigurationFactory sessionConfigurationFactory;
 
     @Override
     public UserResponse save(CreateUserRequest request) {
@@ -34,6 +36,9 @@ public class UserServiceImpl implements UserService {
         } else {
             userEntity.setEnabled(true);
             userEntity.setRole(UserRole.USER);
+            SessionConfiguration sessionConfiguration = sessionConfigurationFactory.defaultConfiguration();
+            userEntity.setSessionConfiguration(sessionConfiguration);
+            sessionConfiguration.setUser(userEntity);
         }
         return userMapper.toResponse(userRepository.save(userEntity));
     }
