@@ -36,3 +36,6 @@ build/
 
 ### for our project###
 .env
+
+###Ignore Logs folder
+/logs

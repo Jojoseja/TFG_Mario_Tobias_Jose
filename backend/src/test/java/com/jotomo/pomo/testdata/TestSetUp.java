@@ -18,6 +18,7 @@ public class TestSetUp {
 
     public static final UUID NON_MATCHING_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
     public static final String NON_MATCHING_EMAIL = "nonmatching@email.com";
+    public static final String NON_MATCHING_PASSWORD = "nonmatchingpassword123";
     public static final String UPDATED_USERNAME = "newusername";
     public static final String SECOND_USERNAME = "newerusername";
     public static final String SECOND_EMAIL = "second@email.com";
