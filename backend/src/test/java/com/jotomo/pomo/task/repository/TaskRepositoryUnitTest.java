@@ -3,7 +3,6 @@ package com.jotomo.pomo.task.repository;
 import com.jotomo.pomo.project.model.Project;
 import com.jotomo.pomo.project.repository.ProjectRepository;
 import com.jotomo.pomo.task.models.Task;
-import com.jotomo.pomo.testdata.TestSetUp;
 import com.jotomo.pomo.user.model.UserEntity;
 import com.jotomo.pomo.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
-import static com.jotomo.pomo.testdata.TestSetUp.USER_ENABLED;
-import static com.jotomo.pomo.testdata.TestSetUp.USER_ROLE;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 public class TaskRepositoryUnitTest {
@@ -41,7 +40,7 @@ public class TaskRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        userEntity = TestSetUp.createUser();
+        userEntity = createUser();
         userRepository.save(userEntity);
     }
 

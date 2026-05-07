@@ -1,7 +1,6 @@
 package com.jotomo.pomo.user.controller;
 
 import com.jotomo.pomo.exception.UserNotFoundException;
-import com.jotomo.pomo.testdata.TestSetUp;
 import com.jotomo.pomo.user.dto.CreateUserRequest;
 import com.jotomo.pomo.user.dto.UserResponse;
 import com.jotomo.pomo.user.model.UserEntity;
@@ -15,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -31,7 +31,7 @@ class UserControllerUnitTest {
 
     @BeforeEach
     void setUp() {
-        user = TestSetUp.createUser();
+        user = createUser();
         createUserRequest = new CreateUserRequest(
                 SECOND_USERNAME,
                 SECOND_EMAIL,
@@ -45,7 +45,7 @@ class UserControllerUnitTest {
         userResponse = userService.findByEmail(SECOND_EMAIL).get();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(userResponse.email() ,response.getBody().email());
+        assertEquals(userResponse.email(), response.getBody().email());
     }
 
     @Test

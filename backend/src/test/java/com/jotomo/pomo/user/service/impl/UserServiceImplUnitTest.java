@@ -6,7 +6,6 @@ import com.jotomo.pomo.user.dto.UpdateUserMeRequest;
 import com.jotomo.pomo.user.dto.UserResponse;
 import com.jotomo.pomo.user.model.UserEntity;
 import com.jotomo.pomo.user.service.UserService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -49,14 +49,14 @@ class UserServiceImplUnitTest {
 
         UserResponse response = userService.findById(userResponse.id()).orElseThrow();
 
-        assertEquals(userResponse.id(),response.id());
+        assertEquals(userResponse.id(), response.id());
         assertEquals(userResponse.username(), response.username());
         assertEquals(userResponse.email(), response.email());
         assertEquals(userResponse.role(), response.role());
     }
 
     @Test
-    void findById_ReturnsEmpty_WhenIdDoesNotExist(){
+    void findById_ReturnsEmpty_WhenIdDoesNotExist() {
         Optional<UserResponse> response = userService.findById(NON_MATCHING_ID);
 
         assertTrue(response.isEmpty());
@@ -67,14 +67,14 @@ class UserServiceImplUnitTest {
         UserResponse userResponse = userService.save(createUserRequest);
         UserResponse response = userService.findByEmail(user.getEmail()).orElseThrow();
 
-        assertEquals(userResponse.id(),response.id());
+        assertEquals(userResponse.id(), response.id());
         assertEquals(userResponse.username(), response.username());
         assertEquals(userResponse.email(), response.email());
         assertEquals(userResponse.role(), response.role());
     }
 
     @Test
-    void findByEmail_ReturnsEmpty_WhenEmailDoesNotExist(){
+    void findByEmail_ReturnsEmpty_WhenEmailDoesNotExist() {
         Optional<UserResponse> response = userService.findByEmail(NON_MATCHING_EMAIL);
 
         assertTrue(response.isEmpty());

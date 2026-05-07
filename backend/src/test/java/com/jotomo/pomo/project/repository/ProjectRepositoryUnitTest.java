@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.jotomo.pomo.testdata.TestSetUp.PROJECT_NAME;
-import static com.jotomo.pomo.testdata.TestSetUp.createUser;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class ProjectRepositoryUnitTest {

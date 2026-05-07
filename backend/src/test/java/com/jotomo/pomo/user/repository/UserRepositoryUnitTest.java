@@ -1,6 +1,5 @@
 package com.jotomo.pomo.user.repository;
 
-import com.jotomo.pomo.testdata.TestSetUp;
 import com.jotomo.pomo.user.model.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +8,9 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.NoSuchElementException;
 
-import static com.jotomo.pomo.testdata.TestSetUp.*;
+import static com.jotomo.pomo.testdata.TestSetUp.NON_MATCHING_EMAIL;
+import static com.jotomo.pomo.testdata.TestSetUp.USER_EMAIL;
+import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -22,7 +23,7 @@ class UserRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        userEntity = TestSetUp.createUser();
+        userEntity = createUser();
         userRepository.save(userEntity);
     }
 
