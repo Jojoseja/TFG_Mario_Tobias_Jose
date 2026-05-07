@@ -35,7 +35,6 @@ function Layout() {
   const storedUser = localStorage.getItem("user");
   const user: User | null = storedUser ? JSON.parse(storedUser) : null;
 
-// TODO: Hay que hacer bien el modo claro
   const [lightMode, setLightMode] = useState(() => {
     return localStorage.getItem("theme") === "light";
   });
