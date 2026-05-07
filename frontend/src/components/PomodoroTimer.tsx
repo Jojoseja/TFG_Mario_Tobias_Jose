@@ -116,8 +116,8 @@ function PomodoroTimer({
         <div
           className="timer-circle"
           style={{
-            background: `radial-gradient(circle, #131925 58%, transparent 59%), 
-              conic-gradient(#73d8ff 0% ${progressBarPercent}%, #283245 ${progressBarPercent}% 100%)`,
+            background: `radial-gradient(circle, var(--timer-center-bg) 58%, transparent 59%),
+              conic-gradient(var(--timer-circle-color) 0% ${progressBarPercent}%, var(--timer-track-bg) ${progressBarPercent}% 100%)`,
           }}
         >
           <div>
