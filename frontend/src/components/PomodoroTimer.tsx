@@ -18,6 +18,18 @@ const defaultPomodoroConfig: PomodoroConfig = {
   cyclesBeforeLongRest: 3,
 };
 
+const storedSettings = localStorage.getItem("pomodoroSettings");
+const pomodoroSettings = storedSettings ? JSON.parse(storedSettings) : {
+  workMinutes: 25,
+  shortBreakMinutes: 5,
+  longBreakMinutes: 15,
+  pomodorosBeforeLongBreak: 4,
+  autoStartBreaks: false,
+  autoStartPomodoros: false,
+  soundEnabled: true,
+  notificationsEnabled: true,
+} 
+
 function PomodoroTimer({
   onModeChange,
   variant = "home",

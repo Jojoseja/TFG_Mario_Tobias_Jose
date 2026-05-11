@@ -1,19 +1,18 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import { IoChevronForward, IoAdd } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import "../styles/Home.css";
 import ProjectModal from "../components/ProjectModal";
+import DeleteProjectModal from "../components/DeleteProjectModal";
 import type { Project } from "../types/project";
 import { MdDarkMode, MdDelete, MdEdit } from "react-icons/md";
-import type { User } from "../types/User";
+import type { User } from "../types/user";
 import { CiLight } from "react-icons/ci";
 import { ApiConstants } from "../constants/ApiConstants";
 
-// TODO: Hay que editar el css para que cuando estes en un proyecto se quede marcado su nombre
-// TODO: La notificación que sale debería ser algo más acorde a la estética de la web y no un pop up de google
-
 function Layout() {
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [projectsOpen, setProjectsOpen] = useState(false);
@@ -31,13 +30,15 @@ function Layout() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [projectModalMode, setProjectModalMode] = useState<"create" | "edit">("create");
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
-
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  
   const storedUser = localStorage.getItem("user");
   const user: User | null = storedUser ? JSON.parse(storedUser) : null;
 
   const [lightMode, setLightMode] = useState(() => {
     return localStorage.getItem("theme") === "light";
   });
+  
 
   //Descomentar para conectar los proyectos con el backend, se comenta para cuando quieres estar en modo dev solo con el front
   /*
@@ -94,19 +95,10 @@ function Layout() {
     );
   };
 
-  const handleDeleteProject = async (projectToDelete: string) => {
-    const confirmed = window.confirm("¿Seguro que quieres eliminar este proyecto?");
-    if (!confirmed) return;
-
-    try {
-      await deleteProjectEndpoint(projectToDelete);
-
-      setProjects((prevProjects) =>
-        prevProjects.filter((project) => project.id !== projectToDelete)
-      );
-    } catch (error) {
-      console.error("Error eliminando proyecto", error);
-    }
+  const handleDeleteProject = (projectId: string) => {
+    setProjects((prevProjects) =>
+      prevProjects.filter((project) => project.id !== projectId)
+    );
   };
 
   return (
@@ -158,7 +150,9 @@ function Layout() {
                   projects.map((project) => (
                     <div key={project.id} className="project-item-row">
                       <button
-                        className="project-item"
+                        className={`project-item ${
+                          location.pathname === `/proyecto/${project.id}` ? "active" : ""
+                        }`}
                         type="button"
                         onClick={() => navigate(`/proyecto/${project.id}`)}
                       >
@@ -178,7 +172,7 @@ function Layout() {
                         className="delete-project-button"
                         type="button"
                         title="Eliminar proyecto"
-                        onClick={() => handleDeleteProject(project.id)}
+                        onClick={() => setProjectToDelete(project)}
                       >
                         <MdDelete />
                       </button>
@@ -233,6 +227,13 @@ function Layout() {
         onClose={() => setIsProjectModalOpen(false)}
         onCreateProject={handleCreateProject}
         onUpdateProject={handleUpdateProject}
+      />
+
+      <DeleteProjectModal
+        open={projectToDelete !== null}
+        projectToDelete={projectToDelete}
+        onClose={() => setProjectToDelete(null)}
+        onDeleteProject={handleDeleteProject}
       />
     </div>
   );

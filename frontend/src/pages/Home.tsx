@@ -2,27 +2,15 @@ import "../styles/Home.css";
 import { useState } from "react";
 import PomodoroTimer from "../components/PomodoroTimer";
 import TaskManager from "../components/TaskManager";
-import type { User } from "../types/User";
+import type { User } from "../types/user";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
 function Home() {
-  const [backendMessage, setBackendMessage] = useState("");
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("work");
 
   const userStorage = localStorage.getItem("user");
   const user: User | null = userStorage ? JSON.parse(userStorage) : null;
-  
-  const testBackend = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/v1/hello");
-      const data = await response.text();
-      setBackendMessage(data);
-    } catch (error) {
-      console.error("Error conectando con backend:", error);
-      setBackendMessage("Error al conectar con el backend");
-    }
-  };
 
   //Variable para el proyecto actual en el que te encuentras
   //TODO: Cambiar esto porque cargue el projecto y ponga el nombre del último proyecto trabajado, aun no sé como hacerlo, además que tampoco sé donde almacenar el proyecto (o si traerlo con una consulta)
@@ -51,12 +39,6 @@ function Home() {
           <p>Gestiona tu tiempo y mantén el foco en tus objetivos.</p>
         </div>
       </header>
-
-      {backendMessage && (
-        <div className="backend-response">
-          <p>{backendMessage}</p>
-        </div>
-      )}
 
       <section className="stats-grid">
         <div className="stat-card">

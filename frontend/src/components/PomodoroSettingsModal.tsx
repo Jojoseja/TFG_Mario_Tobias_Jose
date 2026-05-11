@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/PomodoroSettingsModal.css";
 import { IoClose } from "react-icons/io5";
-
+//TODO: Hacer los endpoints para modificar la configuración (crear no hace falta porque se crea con la creación del usuario)
 export type PomodoroConfig = {
   workSeconds: number;
   shortRestSeconds: number;

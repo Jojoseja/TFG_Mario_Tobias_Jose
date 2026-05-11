@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "../styles/ProyectModal.css";
 import type { Project } from "../types/project";
 import { ApiConstants } from "../constants/ApiConstants";
-import type { User } from "../types/User";
+import type { User } from "../types/user";
 import type { ProjectCreateRequest } from "../types/project";
 import type { ProjectUpdateRequest } from "../types/project";
 
