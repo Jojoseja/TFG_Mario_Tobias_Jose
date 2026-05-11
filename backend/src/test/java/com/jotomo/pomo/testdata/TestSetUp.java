@@ -27,6 +27,7 @@ public class TestSetUp {
     public static final Priority TASK_PRIORITY = Priority.LOW;
     public static final boolean TASK_ARCHIVED = false;
     public static final Status NON_MATCHING_TASK_STATUS = Status.IN_PROGRESS;
+    public static final String NEW_TASK_TITLE = "New Task Title";
 
     public static final String PROJECT_NAME = "Project Name";
     public static final String PROJECT_DESCRIPTION = "Project Description";

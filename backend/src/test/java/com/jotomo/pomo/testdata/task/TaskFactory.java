@@ -1,6 +1,8 @@
 package com.jotomo.pomo.testdata.task;
 
+import com.jotomo.pomo.task.dto.CreateTaskRequest;
 import com.jotomo.pomo.task.dto.TaskResponse;
+import com.jotomo.pomo.task.dto.UpdateTaskRequest;
 import com.jotomo.pomo.task.models.Task;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
@@ -29,5 +31,32 @@ public class TaskFactory {
                 null,
                 null,
                 null);
+    }
+
+    public static CreateTaskRequest defaultCreateTaskRequest(){
+        return new CreateTaskRequest(
+                TASK_TITLE,
+                null,
+                TASK_PRIORITY,
+                TASK_STATUS,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    public static UpdateTaskRequest defaultUpdateTaskRequest(){
+        return new UpdateTaskRequest(
+                NEW_TASK_TITLE,
+                null,
+                TASK_PRIORITY,
+                TASK_STATUS,
+                null,
+                null,
+                false,
+                null,
+                null
+        );
     }
 }
