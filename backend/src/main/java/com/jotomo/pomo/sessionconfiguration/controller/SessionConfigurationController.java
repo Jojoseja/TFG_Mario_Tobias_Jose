@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.jotomo.pomo.constants.ApiConstants.*;
+import static com.jotomo.pomo.constants.ApiConstants.SESSION_CONFIGURATION_PATH;
+import static com.jotomo.pomo.constants.ApiConstants.USER_ID_HEADER;
 
 
 @RestController
@@ -24,7 +25,7 @@ public class SessionConfigurationController {
     @GetMapping()
     public ResponseEntity<SessionConfigurationResponse> getSessionConfiguration(
             @RequestHeader(USER_ID_HEADER) UUID userId
-    ){
+    ) {
         return ResponseEntity.ok(sessionConfigurationService.getSessionConfiguration(userId));
     }
 
@@ -32,7 +33,7 @@ public class SessionConfigurationController {
     public ResponseEntity<SessionConfigurationResponse> putSessionConfiguration(
             @RequestHeader(USER_ID_HEADER) UUID userId,
             @RequestBody SessionConfigurationRequest request
-    ){
+    ) {
         return ResponseEntity.ok(sessionConfigurationService.putSessionConfiguration(userId, request));
     }
 }

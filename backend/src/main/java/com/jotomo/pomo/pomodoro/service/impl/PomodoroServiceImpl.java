@@ -28,34 +28,93 @@ public class PomodoroServiceImpl implements PomodoroService {
 
     @Override
     public Optional<PomodoroResponse> getById(UUID pomodoroId) {
-        Pomodoro pomodoro = pomodoroRepository.getById(pomodoroId);
-        return Optional.ofNullable(pomodoroMapper.toResponse(pomodoro));
+        log.info("getById Pomodoro: {}", pomodoroId);
+        Optional<Pomodoro> pomodoro = pomodoroRepository.findById(pomodoroId);
+        return pomodoro.map(pomodoroMapper::toResponse);
     }
 
     @Override
     public Optional<PomodoroResponse> getBySessionIdAndOrderIndex(UUID sessionId, int orderIndex) {
-        Optional<Pomodoro> pomodoro = pomodoroRepository.findBySessionAndOrderIndex(sessionRepository.findById(sessionId)
-                .orElseThrow(NoSuchElementException::new),
-                orderIndex);
-        return Optional.ofNullable(pomodoroMapper.toResponse(pomodoro.orElse(null)));
+        log.debug("Finding pomodoro by session and order index: sessionId={}, orderIndex={}",
+                sessionId,
+                orderIndex
+        );
+
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> {
+                    log.warn("Pomodoro lookup rejected: session not found, sessionId={}", sessionId);
+                    return new NoSuchElementException("Session not found");
+                });
+
+        Optional<Pomodoro> pomodoro = pomodoroRepository.findBySessionAndOrderIndex(session, orderIndex);
+
+        if (pomodoro.isEmpty()) {
+            log.debug("Pomodoro not found: sessionId={}, orderIndex={}", sessionId, orderIndex);
+        } else {
+            log.debug("Pomodoro found: pomodoroId={}, sessionId={}, orderIndex={}",
+                    pomodoro.get().getId(),
+                    sessionId,
+                    orderIndex
+            );
+        }
+
+        return pomodoro.map(pomodoroMapper::toResponse);
     }
 
     @Override
-    public PomodoroResponse createPomodoro(CreatePomodoroRequest createPomodoroRequest) {
-        Session session = sessionRepository.findById(createPomodoroRequest.sessionId()).orElseThrow(NoSuchElementException::new);
-        Pomodoro pomodoro = pomodoroRepository.saveAndFlush(pomodoroMapper.toEntity(createPomodoroRequest, session));
+    public PomodoroResponse createPomodoro(CreatePomodoroRequest request) {
+        log.info("Creating pomodoro: sessionId={}", request.sessionId());
+
+        Session session = sessionRepository.findById(request.sessionId())
+                .orElseThrow(() -> {
+                    log.warn("Pomodoro creation rejected: session not found, sessionId={}", request.sessionId());
+                    return new NoSuchElementException("Session not found");
+                });
+
+        Pomodoro pomodoro = pomodoroRepository.saveAndFlush(
+                pomodoroMapper.toEntity(request, session)
+        );
+
+        log.info("Pomodoro created: pomodoroId={}, sessionId={}",
+                pomodoro.getId(),
+                session.getId()
+        );
+
         return pomodoroMapper.toResponse(pomodoro);
     }
 
     @Override
-    public PomodoroResponse updatePomodoro(UUID pomodoroId, UpdatePomodoroRequest updatePomodoroRequest) {
-        Pomodoro pomodoro = pomodoroRepository.findById(pomodoroId).orElseThrow(NoSuchElementException::new);
-        pomodoroMapper.updateEntity(updatePomodoroRequest, pomodoro);
-        return pomodoroMapper.toResponse(pomodoroRepository.saveAndFlush(pomodoro));
+    public PomodoroResponse updatePomodoro(UUID pomodoroId, UpdatePomodoroRequest request) {
+        log.info("Updating pomodoro: pomodoroId={}", pomodoroId);
+
+        Pomodoro pomodoro = pomodoroRepository.findById(pomodoroId)
+                .orElseThrow(() -> {
+                    log.warn("Pomodoro update rejected: pomodoro not found, pomodoroId={}", pomodoroId);
+                    return new NoSuchElementException("Pomodoro not found");
+                });
+
+        pomodoroMapper.updateEntity(request, pomodoro);
+
+        Pomodoro updatedPomodoro = pomodoroRepository.saveAndFlush(pomodoro);
+
+        log.info("Pomodoro updated: pomodoroId={}", updatedPomodoro.getId());
+
+        return pomodoroMapper.toResponse(updatedPomodoro);
     }
 
     @Override
     public void deletePomodoro(UUID pomodoroId) {
-        pomodoroRepository.delete(pomodoroRepository.findById(pomodoroId).orElseThrow(NoSuchElementException::new));
+        log.info("Deleting pomodoro: pomodoroId={}", pomodoroId);
+
+        Pomodoro pomodoro = pomodoroRepository.findById(pomodoroId)
+                .orElseThrow(() -> {
+                    log.warn("Pomodoro deletion rejected: pomodoro not found, pomodoroId={}", pomodoroId);
+                    return new NoSuchElementException("Pomodoro not found");
+                });
+
+        pomodoroRepository.delete(pomodoro);
+
+        log.info("Pomodoro deleted: pomodoroId={}", pomodoroId);
     }
+
 }

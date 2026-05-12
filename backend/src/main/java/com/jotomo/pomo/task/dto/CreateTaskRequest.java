@@ -14,21 +14,14 @@ public record CreateTaskRequest (
         @NotBlank
         @Size(max = 100)
         String title,
-
         @Size(max = 1000)
         String description,
-
         @NotNull
         Priority priority,
-
         @NotNull
         Status status,
-
         UUID projectId,
-
         UUID parentTaskId,
-
         LocalDateTime completedAt,
-
         LocalDateTime archivedAt
 ){}

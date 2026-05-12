@@ -21,21 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 public class TaskRepositoryUnitTest {
 
-    @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProjectRepository projectRepository;
-
-    private UserEntity userEntity;
-
-    private Task task;
-
     private final List<Task> taskList = new ArrayList<>();
 
+    @Autowired
+    private TaskRepository taskRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
+    private UserEntity userEntity;
+    private Task task;
     private Project project;
 
     @BeforeEach
