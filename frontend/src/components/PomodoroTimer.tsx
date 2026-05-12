@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../styles/PomodoroTimer.css";
 import { FaGear } from "react-icons/fa6";
 import PomodoroSettingsModal from "./PomodoroSettingsModal";
@@ -8,6 +8,10 @@ import type {
   SessionConfigurationRequest,
 } from "../types/sessionConfiguration";
 import type { SessionRequest } from "../types/session";
+import type {
+  BackendSessionType,
+  PomodoroResponse,
+} from "../types/pomodoro";
 import {
   getSessionConfigurationRequest,
   putSessionConfigurationRequest,
@@ -16,6 +20,10 @@ import {
   finishSessionRequest,
   startSessionRequest,
 } from "../services/sessionService";
+import {
+  createPomodoroRequest,
+  updatePomodoroRequest,
+} from "../services/pomodoroService";
 import { secondsToRoundedMinutes } from "../utils/timeUtils";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
@@ -32,13 +40,25 @@ type PomodoroTimerProps = {
   variant?: "home" | "project";
 };
 
+type StoredPomodoroTimerState = {
+  activeSessionId: string;
+  activePomodoro: PomodoroResponse | null;
+  pomodoroOrderIndex: number;
+  sessionConfigurationId: string | null;
+  sessionStatus: SessionStatus;
+  completedPomodoros: number;
+  seconds: number;
+  usedSeconds: UsedSecondsByStatus;
+};
+
+const POMODORO_TIMER_STORAGE_KEY = "pomodoroTimerState";
+
 const initialUsedSeconds: UsedSecondsByStatus = {
   work: 0,
   shortRest: 0,
   longRest: 0,
 };
 
-// Necesario para que React cargue el componente mientras llega la configuración del backend
 const defaultPomodoroConfig: PomodoroConfig = {
   workSeconds: 1500,
   shortRestSeconds: 300,
@@ -58,8 +78,13 @@ function PomodoroTimer({
   >(null);
 
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [activePomodoro, setActivePomodoro] =
+    useState<PomodoroResponse | null>(null);
+  const [pomodoroOrderIndex, setPomodoroOrderIndex] = useState(0);
+
   const [isStartingSession, setIsStartingSession] = useState(false);
   const [isFinishingSession, setIsFinishingSession] = useState(false);
+  const [isChangingPomodoro, setIsChangingPomodoro] = useState(false);
 
   const [isRunning, setIsRunning] = useState(false);
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("work");
@@ -71,12 +96,20 @@ function PomodoroTimer({
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
   const [notification, setNotification] = useState<Notification | null>(null);
 
+  const hasLoadedInitialStateRef = useRef(false);
+
   const currentTotalSeconds =
     sessionStatus === "work"
       ? config.workSeconds
       : sessionStatus === "shortRest"
       ? config.shortRestSeconds
       : config.longRestSeconds;
+
+  const isTimerActionDisabled =
+    isLoadingConfig ||
+    isStartingSession ||
+    isFinishingSession ||
+    isChangingPomodoro;
 
   useEffect(() => {
     const loadSessionConfiguration = async () => {
@@ -87,7 +120,27 @@ function PomodoroTimer({
 
         setSessionConfigurationId(configuration.id);
         setConfig(loadedConfig);
-        setSeconds(loadedConfig.workSeconds);
+
+        const storedTimerState = getStoredPomodoroTimerState();
+
+        if (storedTimerState?.activeSessionId) {
+          setActiveSessionId(storedTimerState.activeSessionId);
+          setActivePomodoro(storedTimerState.activePomodoro);
+          setPomodoroOrderIndex(storedTimerState.pomodoroOrderIndex);
+          setSessionConfigurationId(
+            storedTimerState.sessionConfigurationId ?? configuration.id
+          );
+          setSessionStatus(storedTimerState.sessionStatus);
+          setCompletedPomodoros(storedTimerState.completedPomodoros);
+          setSeconds(storedTimerState.seconds);
+          setUsedSeconds(storedTimerState.usedSeconds);
+
+          // Al volver de otra página, dejamos el timer pausado.
+          // Así no se pierden datos ni se crean sesiones duplicadas.
+          setIsRunning(false);
+        } else {
+          setSeconds(loadedConfig.workSeconds);
+        }
       } catch (error) {
         console.error("Error cargando la configuración del Pomodoro", error);
         showNotification(
@@ -95,12 +148,42 @@ function PomodoroTimer({
           "No se ha podido cargar la configuración. Se usarán valores por defecto."
         );
       } finally {
+        hasLoadedInitialStateRef.current = true;
         setIsLoadingConfig(false);
       }
     };
 
     void loadSessionConfiguration();
   }, []);
+
+  useEffect(() => {
+    if (!hasLoadedInitialStateRef.current) return;
+
+    if (!activeSessionId) {
+      clearStoredPomodoroTimerState();
+      return;
+    }
+
+    saveStoredPomodoroTimerState({
+      activeSessionId,
+      activePomodoro,
+      pomodoroOrderIndex,
+      sessionConfigurationId,
+      sessionStatus,
+      completedPomodoros,
+      seconds,
+      usedSeconds,
+    });
+  }, [
+    activeSessionId,
+    activePomodoro,
+    pomodoroOrderIndex,
+    sessionConfigurationId,
+    sessionStatus,
+    completedPomodoros,
+    seconds,
+    usedSeconds,
+  ]);
 
   useEffect(() => {
     onModeChange(sessionStatus);
@@ -117,23 +200,8 @@ function PomodoroTimer({
 
       setSeconds((prevSeconds) => {
         if (prevSeconds <= 1) {
-          setIsRunning(false);
-
-          if (sessionStatus === "work") {
-            const nextPomodorosCount = completedPomodoros + 1;
-            setCompletedPomodoros(nextPomodorosCount);
-
-            if (nextPomodorosCount % config.cyclesBeforeLongRest === 0) {
-              setSessionStatus("longRest");
-              return config.longRestSeconds;
-            }
-
-            setSessionStatus("shortRest");
-            return config.shortRestSeconds;
-          }
-
-          setSessionStatus("work");
-          return config.workSeconds;
+          void moveToNextSessionStatus(true);
+          return 0;
         }
 
         return prevSeconds - 1;
@@ -141,7 +209,15 @@ function PomodoroTimer({
     }, 1000);
 
     return () => window.clearInterval(interval);
-  }, [isRunning, sessionStatus, completedPomodoros, config]);
+  }, [
+    isRunning,
+    sessionStatus,
+    activeSessionId,
+    activePomodoro,
+    completedPomodoros,
+    pomodoroOrderIndex,
+    config,
+  ]);
 
   const showNotification = (type: "success" | "error", text: string) => {
     setNotification({ type, text });
@@ -152,7 +228,7 @@ function PomodoroTimer({
   };
 
   const handleStart = async () => {
-    if (isLoadingConfig || isStartingSession || isFinishingSession) return;
+    if (isTimerActionDisabled) return;
 
     if (!sessionConfigurationId) {
       showNotification(
@@ -162,19 +238,47 @@ function PomodoroTimer({
       return;
     }
 
+    let createdSessionId: string | null = null;
+
     try {
       setIsStartingSession(true);
 
       if (!activeSessionId) {
-        const request = buildStartSessionRequest(sessionConfigurationId);
-        const startedSession = await startSessionRequest(request);
+        const sessionRequest = buildStartSessionRequest(sessionConfigurationId);
+        const startedSession = await startSessionRequest(sessionRequest);
+
+        createdSessionId = startedSession.id;
+
+        const firstPomodoro = await createPomodoroRequest({
+          orderIndex: 1,
+          completed: false,
+          sessionType: "WORK",
+          sessionId: startedSession.id,
+        });
 
         setActiveSessionId(startedSession.id);
+        setActivePomodoro(firstPomodoro);
+        setPomodoroOrderIndex(1);
       }
 
       setIsRunning(true);
     } catch (error) {
       console.error("Error iniciando sesión Pomodoro", error);
+
+      if (createdSessionId) {
+        try {
+          await finishSessionRequest(
+            createdSessionId,
+            buildFinishSessionRequest(sessionConfigurationId, initialUsedSeconds)
+          );
+        } catch (finishError) {
+          console.error(
+            "No se ha podido cerrar la sesión creada tras fallar el pomodoro",
+            finishError
+          );
+        }
+      }
+
       showNotification("error", "No se ha podido iniciar la sesión.");
     } finally {
       setIsStartingSession(false);
@@ -185,28 +289,50 @@ function PomodoroTimer({
     setIsRunning(false);
   };
 
-  const moveToNextSessionStatus = () => {
+  const moveToNextSessionStatus = async (
+    completeCurrentPomodoro: boolean
+  ) => {
     if (isTimerActionDisabled || !activeSessionId) return;
 
-    setIsRunning(false);
+    try {
+      setIsChangingPomodoro(true);
+      setIsRunning(false);
 
-    if (sessionStatus === "work") {
-      const nextPomodorosCount = completedPomodoros + 1;
-      setCompletedPomodoros(nextPomodorosCount);
-
-      if (nextPomodorosCount % config.cyclesBeforeLongRest === 0) {
-        setSessionStatus("longRest");
-        setSeconds(config.longRestSeconds);
-        return;
+      if (activePomodoro && completeCurrentPomodoro) {
+        await updatePomodoroRequest(activePomodoro.id, {
+          orderIndex: activePomodoro.orderIndex,
+          completed: true,
+          sessionType: activePomodoro.sessionType,
+          sessionId: activePomodoro.sessionId,
+        });
       }
 
-      setSessionStatus("shortRest");
-      setSeconds(config.shortRestSeconds);
-      return;
-    }
+      const { nextStatus, nextCompletedPomodoros } = getNextSessionStatus(
+        sessionStatus,
+        completedPomodoros,
+        config.cyclesBeforeLongRest
+      );
 
-    setSessionStatus("work");
-    setSeconds(config.workSeconds);
+      const nextOrderIndex = pomodoroOrderIndex + 1;
+
+      const nextPomodoro = await createPomodoroRequest({
+        orderIndex: nextOrderIndex,
+        completed: false,
+        sessionType: mapSessionStatusToBackendSessionType(nextStatus),
+        sessionId: activeSessionId,
+      });
+
+      setCompletedPomodoros(nextCompletedPomodoros);
+      setSessionStatus(nextStatus);
+      setSeconds(getSecondsForSessionStatus(nextStatus, config));
+      setPomodoroOrderIndex(nextOrderIndex);
+      setActivePomodoro(nextPomodoro);
+    } catch (error) {
+      console.error("Error cambiando de pomodoro", error);
+      showNotification("error", "No se ha podido cambiar al siguiente tramo.");
+    } finally {
+      setIsChangingPomodoro(false);
+    }
   };
 
   const handleOpenSettings = () => {
@@ -222,7 +348,7 @@ function PomodoroTimer({
   };
 
   const handleFinish = async () => {
-    if (isLoadingConfig || isStartingSession || isFinishingSession) return;
+    if (isTimerActionDisabled) return;
 
     setIsRunning(false);
 
@@ -242,10 +368,13 @@ function PomodoroTimer({
       await finishSessionRequest(activeSessionId, request);
 
       setActiveSessionId(null);
+      setActivePomodoro(null);
+      setPomodoroOrderIndex(0);
       setCompletedPomodoros(0);
       setSessionStatus("work");
       setSeconds(config.workSeconds);
       setUsedSeconds(initialUsedSeconds);
+      clearStoredPomodoroTimerState();
 
       showNotification("success", "Sesión finalizada correctamente.");
     } catch (error) {
@@ -280,8 +409,11 @@ function PomodoroTimer({
       setSeconds(updatedConfig.workSeconds);
       setCompletedPomodoros(0);
       setActiveSessionId(null);
+      setActivePomodoro(null);
+      setPomodoroOrderIndex(0);
       setUsedSeconds(initialUsedSeconds);
       setIsSettingsOpen(false);
+      clearStoredPomodoroTimerState();
 
       showNotification("success", "Configuración guardada correctamente.");
     } catch (error) {
@@ -311,9 +443,6 @@ function PomodoroTimer({
       : sessionStatus === "shortRest"
       ? "Descanso corto"
       : "Descanso largo";
-
-  const isTimerActionDisabled =
-    isLoadingConfig || isStartingSession || isFinishingSession;
 
   return (
     <>
@@ -362,7 +491,7 @@ function PomodoroTimer({
               className="secondary-button"
               type="button"
               onClick={handlePause}
-              disabled={isFinishingSession}
+              disabled={isFinishingSession || isChangingPomodoro}
             >
               Pausar
             </button>
@@ -371,10 +500,10 @@ function PomodoroTimer({
           <button
             className="secondary-button"
             type="button"
-            onClick={moveToNextSessionStatus}
+            onClick={() => void moveToNextSessionStatus(false)}
             disabled={isTimerActionDisabled || !activeSessionId}
           >
-            Saltar
+            {isChangingPomodoro ? "Cambiando..." : "Saltar"}
           </button>
 
           <button
@@ -446,6 +575,75 @@ function buildFinishSessionRequest(
     longBreakDurationUsed: secondsToRoundedMinutes(usedSeconds.longRest),
     pomodoros: [],
   };
+}
+
+function mapSessionStatusToBackendSessionType(
+  status: SessionStatus
+): BackendSessionType {
+  if (status === "work") return "WORK";
+  if (status === "shortRest") return "SHORT_BREAK";
+  return "LONG_BREAK";
+}
+
+function getNextSessionStatus(
+  currentStatus: SessionStatus,
+  completedPomodoros: number,
+  cyclesBeforeLongRest: number
+): {
+  nextStatus: SessionStatus;
+  nextCompletedPomodoros: number;
+} {
+  if (currentStatus === "work") {
+    const nextCompletedPomodoros = completedPomodoros + 1;
+
+    if (nextCompletedPomodoros % cyclesBeforeLongRest === 0) {
+      return {
+        nextStatus: "longRest",
+        nextCompletedPomodoros,
+      };
+    }
+
+    return {
+      nextStatus: "shortRest",
+      nextCompletedPomodoros,
+    };
+  }
+
+  return {
+    nextStatus: "work",
+    nextCompletedPomodoros: completedPomodoros,
+  };
+}
+
+function getSecondsForSessionStatus(
+  status: SessionStatus,
+  config: PomodoroConfig
+): number {
+  if (status === "work") return config.workSeconds;
+  if (status === "shortRest") return config.shortRestSeconds;
+  return config.longRestSeconds;
+}
+
+function saveStoredPomodoroTimerState(state: StoredPomodoroTimerState) {
+  localStorage.setItem(POMODORO_TIMER_STORAGE_KEY, JSON.stringify(state));
+}
+
+function getStoredPomodoroTimerState(): StoredPomodoroTimerState | null {
+  const storedState = localStorage.getItem(POMODORO_TIMER_STORAGE_KEY);
+
+  if (!storedState) return null;
+
+  try {
+    return JSON.parse(storedState) as StoredPomodoroTimerState;
+  } catch (error) {
+    console.error("Error leyendo el estado guardado del Pomodoro", error);
+    clearStoredPomodoroTimerState();
+    return null;
+  }
+}
+
+function clearStoredPomodoroTimerState() {
+  localStorage.removeItem(POMODORO_TIMER_STORAGE_KEY);
 }
 
 export default PomodoroTimer;
