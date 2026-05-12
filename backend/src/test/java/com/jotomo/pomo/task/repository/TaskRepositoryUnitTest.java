@@ -12,6 +12,8 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.jotomo.pomo.testdata.TestSetUp.*;
 import static com.jotomo.pomo.testdata.user.UserFactory.createUser;
@@ -44,7 +46,8 @@ public class TaskRepositoryUnitTest {
         createTask();
         createProject();
         task.setProject(project);
-        assertEquals(task, taskRepository.findByOwnerAndTitleAndProject(userEntity, TASK_TITLE, project).get());
+        Optional<Task> newTask = taskRepository.findByOwnerAndTitleAndProject(userEntity, TASK_TITLE, project);
+        assertEquals(task, newTask.orElseThrow(NoSuchElementException::new));
     }
 
     @Test
