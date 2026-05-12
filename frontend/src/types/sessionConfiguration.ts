@@ -1,10 +1,17 @@
 export interface SessionConfiguration {
-    id: string,
-    workDuration: number;
-    shortBreakDuration: number;
-    longBreakDuration: number;
-    cyclesBeforeLongBreak: number;
-    ownerId?: string; 
+  id: string;
+  workDuration: number;
+  shortBreakDuration: number;
+  longBreakDuration: number;
+  cyclesBeforeLongBreak: number;
+  ownerId?: string;
+}
+
+export interface SessionConfigurationRequest {
+  workDuration: number;
+  shortBreakDuration: number;
+  longBreakDuration: number;
+  cyclesBeforeLongBreak: number;
 }
 
 export interface SessionResponse {

@@ -14,6 +14,7 @@
 
   --accent-cyan: #73d8ff;
   --accent-violet: #b182ff;
+  --accent-red: #ff5c8a;
   --accent-gradient: linear-gradient(135deg, #73d8ff, #b182ff);
 
   --hover: rgba(255, 255, 255, 0.05);
@@ -143,7 +144,8 @@ html,
 body,
 #root {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
+  overflow-x: hidden;
 }
 
 body {
