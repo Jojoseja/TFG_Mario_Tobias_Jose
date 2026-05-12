@@ -1,7 +1,6 @@
 package com.jotomo.pomo.pomodoro.service;
 
 import com.jotomo.pomo.pomodoro.dto.CreatePomodoroRequest;
-import com.jotomo.pomo.pomodoro.dto.PomodoroRequest;
 import com.jotomo.pomo.pomodoro.dto.PomodoroResponse;
 import com.jotomo.pomo.pomodoro.dto.UpdatePomodoroRequest;
 
