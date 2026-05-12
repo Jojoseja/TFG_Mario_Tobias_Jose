@@ -63,6 +63,13 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getProjectTasks(id, request));
     }
 
+    @GetMapping("/latest")
+    public ResponseEntity<ProjectResponse> getLatest(
+            @RequestHeader(USER_ID_HEADER) UUID id
+    ) {
+        return ResponseEntity.ok(projectService.latestProject(id));
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ProjectResponse> createProject(
