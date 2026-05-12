@@ -21,15 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(
-        name = "tasks",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_task_owner_title",
-                        columnNames = {"owner_id", "project_id", "title"}
-                )
-        }
-)
+@Table(name = "tasks")
 public class Task {
 
     @Id
