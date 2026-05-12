@@ -200,4 +200,22 @@ class ProjectServiceImplUnitTest {
 
         assertFalse(projectRepository.existsById(project.getId()));
     }
+
+    @Test
+    void getLatest_ShouldReturnLatestProject_WhenTaskExists() {
+        userEntity = userRepository.save(userEntity);
+        projectService.getProjects(userEntity.getId());
+        userEntity.getProjects().add(project);
+        project.setOwner(userEntity);
+        project = projectRepository.save(project);
+        Task task = defaultTask();
+        task.setCompletedAt(SESSION_STARTED_AT);
+        project.getTasks().add(task);
+        task.setProject(project);
+        userEntity.getTasks().add(task);
+        task.setOwner(userEntity);
+        taskRepository.saveAndFlush(task);
+
+        assertEquals(projectMapper.toResponse(project), projectService.latestProject(userEntity.getId()));
+    }
 }

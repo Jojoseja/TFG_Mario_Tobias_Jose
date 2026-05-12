@@ -29,4 +29,6 @@ public interface ProjectService {
     void deleteProject (UUID userId, UUID projectId);
 
     void deleteProject (UUID userId, String name);
+
+    ProjectResponse latestProject(UUID userId);
 }

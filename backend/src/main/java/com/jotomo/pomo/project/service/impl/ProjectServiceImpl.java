@@ -10,6 +10,7 @@ import com.jotomo.pomo.project.repository.ProjectRepository;
 import com.jotomo.pomo.project.service.ProjectService;
 import com.jotomo.pomo.task.dto.TaskResponse;
 import com.jotomo.pomo.task.mapper.TaskMapper;
+import com.jotomo.pomo.task.models.Task;
 import com.jotomo.pomo.task.repository.TaskRepository;
 import com.jotomo.pomo.user.model.UserEntity;
 import com.jotomo.pomo.user.repository.UserRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -196,6 +198,20 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = getProject(user, name);
         user.getProjects().remove(project);
         projectRepository.delete(project);
+    }
+
+    public ProjectResponse latestProject(UUID userId) {
+        log.info("Fetching latest worked project for user {}", userId);
+
+        UserEntity user = getUser(userId);
+
+        Optional<Task> task = taskRepository.findTopByOwnerOrderByCompletedAtDesc(user);
+        Project project = task.orElseThrow(() -> {
+            log.info("No such task was found for user {}", userId);
+            return new NoSuchElementException();
+        }).getProject();
+
+        return projectMapper.toResponse(project);
     }
 
     private UserEntity getUser(UUID userId) {
