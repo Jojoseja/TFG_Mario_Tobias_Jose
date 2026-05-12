@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 import { useState } from "react";
-import { ApiConstants } from "../constants/ApiConstants";
+import { registerRequest } from "../services/authService";
+import { saveStoredUser } from "../services/userStorageService";
 
 function Register() {
   const navigate = useNavigate();
@@ -47,43 +48,33 @@ function Register() {
     }
 
     try {
-      const response = await fetch(ApiConstants.USER_PATH, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
+      const user = await registerRequest({
+        username,
+        email,
+        password,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error creando usuario:", response.status, errorText);
-        setNotification({
-          type: "error",
-          text: "Error al registrar el usuario. Por favor, intenta nuevamente."
-        });
-        setTimeout(() => {
-          setNotification(null);
-        }, 3000);
+      saveStoredUser(user);
 
-        return;
-      }
-      
       setNotification({
         type: "success",
-        text: "Usuario registrado exitosamente."
+        text: "Usuario registrado exitosamente.",
       });
 
       setTimeout(() => {
         navigate("/home");
-      }, 1500);
-
+      }, 500);
     } catch (error) {
-      console.error("Error de conexión:", error);
+      console.error("Error creando usuario:", error);
+
+      setNotification({
+        type: "error",
+        text: "Error al registrar el usuario. Por favor, intenta nuevamente.",
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
     }
   };
 

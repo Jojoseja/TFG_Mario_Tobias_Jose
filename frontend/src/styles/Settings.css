@@ -63,10 +63,20 @@
   padding: 12px 14px;
   outline: none;
   font-size: 0.95rem;
+  font-family: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .settings-field input:focus {
   border-color: var(--active-border);
+  box-shadow: 0 0 0 3px rgba(115, 216, 255, 0.12);
+}
+
+.settings-field input::placeholder {
+  color: var(--text-muted);
 }
 
 .settings-input-unit {
@@ -94,7 +104,7 @@
   border-bottom: 1px solid var(--border-soft);
 }
 
-.settings-switch-row:last-child {
+.settings-switch-row:last-of-type {
   border-bottom: none;
 }
 
@@ -122,16 +132,18 @@
 }
 
 .primary-settings-button,
-.secondary-settings-button {
-  border: none;
+.secondary-settings-button,
+.save-settings-button {
   border-radius: 14px;
   padding: 12px 16px;
   font-weight: 700;
   cursor: pointer;
   transition: 0.2s ease;
+  font-family: inherit;
 }
 
-.primary-settings-button {
+.primary-settings-button,
+.save-settings-button {
   background: linear-gradient(
     135deg,
     rgba(115, 216, 255, 0.22),
@@ -141,7 +153,8 @@
   border: 1px solid var(--active-border);
 }
 
-.primary-settings-button:hover {
+.primary-settings-button:hover,
+.save-settings-button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
@@ -154,6 +167,41 @@
 .secondary-settings-button:hover {
   background: var(--hover);
   color: var(--text);
+}
+
+.save-settings-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.settings-actions-single {
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.settings-loading,
+.settings-error {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.settings-error {
+  color: var(--accent-red);
+}
+
+.settings-save-message {
+  margin: 12px 0 0;
+  color: var(--accent-cyan);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .settings-stats-grid {
@@ -182,6 +230,12 @@
   font-size: 1.4rem;
 }
 
+.settings-time-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 @media (max-width: 1000px) {
   .settings-grid {
     grid-template-columns: 1fr;
@@ -204,5 +258,13 @@
   .settings-switch-row {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .settings-actions {
+    flex-direction: column;
+  }
+
+  .settings-actions-single {
+    align-items: stretch;
   }
 }

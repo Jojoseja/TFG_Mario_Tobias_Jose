@@ -62,10 +62,18 @@
   color: var(--text-muted);
   font-size: clamp(1.6rem, 2vw, 2rem);
   cursor: pointer;
+  transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .pomo-settings-button:hover {
   color: var(--text);
+  transform: rotate(18deg);
+}
+
+.pomo-settings-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
 }
 
 .timer-actions {
@@ -108,4 +116,53 @@
 
 .secondary-button:hover {
   background: var(--btn-secondary-bg-hover);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/* Popup de notificaciones */
+
+.notification-banner {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 14px 24px;
+  border-radius: 12px;
+
+  color: white;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.35;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: slideDown 0.25s ease-out;
+}
+
+.notification-banner.success {
+  background-color: #22c55e;
+}
+
+.notification-banner.error {
+  background-color: #ef4444;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }

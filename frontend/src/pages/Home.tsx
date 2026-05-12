@@ -13,7 +13,7 @@ function Home() {
   const user: User | null = userStorage ? JSON.parse(userStorage) : null;
 
   //Variable para el proyecto actual en el que te encuentras
-  //TODO: Cambiar esto porque cargue el projecto y ponga el nombre del último proyecto trabajado, aun no sé como hacerlo, además que tampoco sé donde almacenar el proyecto (o si traerlo con una consulta)
+  //TODO: Cambiar esto porque cargue el projecto y ponga el nombre del último proyecto trabajado, debe hacerlo por la última tarea completada de un proyecto
   const projectName = "Alemán";
 
   //Texto de la sesión actual

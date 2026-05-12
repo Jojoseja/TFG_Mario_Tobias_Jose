@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import "../styles/PomodoroSettingsModal.css";
 import { IoClose } from "react-icons/io5";
-//TODO: Hacer los endpoints para modificar la configuración (crear no hace falta porque se crea con la creación del usuario)
+import {
+  getMinutes,
+  getSecondsRemainder,
+  parseInputNumber,
+  toTotalSeconds,
+} from "../utils/timeUtils";
+
 export type PomodoroConfig = {
   workSeconds: number;
   shortRestSeconds: number;
@@ -33,19 +39,6 @@ function PomodoroSettingsModal({
 
   const [cyclesBeforeLongRest, setCyclesBeforeLongRest] = useState("");
   const [error, setError] = useState("");
-
-  const getMinutes = (totalSeconds: number) => Math.floor(totalSeconds / 60);
-
-  const getSecondsRemainder = (totalSeconds: number) => totalSeconds % 60;
-
-  const toTotalSeconds = (minutes: number, seconds: number) => {
-    return minutes * 60 + seconds;
-  };
-
-  const parseInputNumber = (value: string) => {
-    if (value.trim() === "") return 0;
-    return Number(value);
-  };
 
   useEffect(() => {
     if (!open) return;
@@ -123,7 +116,9 @@ function PomodoroSettingsModal({
     }
 
     if (parsedCyclesBeforeLongRest <= 0) {
-      setError("El número de pomodoros antes del descanso largo debe ser mayor que 0.");
+      setError(
+        "El número de pomodoros antes del descanso largo debe ser mayor que 0."
+      );
       return;
     }
 

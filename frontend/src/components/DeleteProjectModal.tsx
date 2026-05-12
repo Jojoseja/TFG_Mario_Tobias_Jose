@@ -2,8 +2,7 @@ import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import "../styles/ProyectModal.css";
 import type { Project } from "../types/project";
-import type { User } from "../types/user";
-import { ApiConstants } from "../constants/ApiConstants";
+import { deleteProjectRequest } from "../services/projectService";
 
 type DeleteProjectModalProps = {
   open: boolean;
@@ -26,7 +25,7 @@ function DeleteProjectModal({
     setIsDeleting(true);
 
     try {
-      await deleteProjectEndpoint(projectToDelete.id);
+      await deleteProjectRequest(projectToDelete.id);
       onDeleteProject(projectToDelete.id);
       onClose();
     } catch (error) {
@@ -87,26 +86,6 @@ function DeleteProjectModal({
       </div>
     </div>
   );
-}
-
-async function deleteProjectEndpoint(projectId: string): Promise<void> {
-  const storedUser = localStorage.getItem("user");
-  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
-
-  if (!user?.id) {
-    throw new Error("No se ha encontrado ningún id de usuario guardado");
-  }
-
-  const response = await fetch(`${ApiConstants.PROJECT_PATH}/${projectId}`, {
-    method: "DELETE",
-    headers: {
-      [ApiConstants.USER_ID_HEADER]: user.id,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error eliminando proyecto: ${response.status}`);
-  }
 }
 
 export default DeleteProjectModal;

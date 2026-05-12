@@ -40,7 +40,7 @@ function ProjectPage() {
           <PomodoroTimer variant = "project" onModeChange={setSessionStatus} />
         </div>
         <div className="columna">
-          <TaskManager variant="project"/>
+          <TaskManager variant="project" projectId={project.id}/>
         </div>
       </section>
     </>

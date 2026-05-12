@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import "../styles/ProyectModal.css";
 import type { Project } from "../types/project";
-import { ApiConstants } from "../constants/ApiConstants";
-import type { User } from "../types/user";
 import type { ProjectCreateRequest } from "../types/project";
 import type { ProjectUpdateRequest } from "../types/project";
+import {
+  createProjectRequest,
+  updateProjectRequest,
+} from "../services/projectService";
 
 type ProjectModalProps = {
   open: boolean;
@@ -57,7 +59,7 @@ function ProjectModal({
           description: projectDescription.trim(),
         };
 
-        const updatedProject = await editarProyecto(
+        const updatedProject = await updateProjectRequest(
           projectToEdit.id,
           updateRequest
         );
@@ -75,7 +77,7 @@ function ProjectModal({
         description: projectDescription.trim(),
       };
 
-      const createdProject = await crearProyecto(createRequest);
+      const createdProject = await createProjectRequest(createRequest);
 
       if (createdProject) {
         onCreateProject(createdProject);
@@ -148,73 +150,6 @@ function ProjectModal({
       </div>
     </div>
   );
-}
-
-async function crearProyecto(
-  proyecto: ProjectCreateRequest
-): Promise<Project | null> {
-  const storedUser = localStorage.getItem("user");
-  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
-
-  if (!user?.id) {
-    console.error("No se ha encontrado ningún id guardado");
-    return null;
-  }
-
-  try {
-    const response = await fetch(ApiConstants.PROJECT_PATH, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        [ApiConstants.USER_ID_HEADER]: user.id,
-      },
-      body: JSON.stringify(proyecto),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error creando el proyecto: ${response.status}`);
-    }
-
-    const createdProject: Project = await response.json();
-    return createdProject;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
-async function editarProyecto(
-  projectId: string,
-  proyecto: ProjectUpdateRequest
-): Promise<Project | null> {
-  const storedUser = localStorage.getItem("user");
-  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
-
-  if (!user?.id) {
-    console.error("No se ha encontrado ningún id guardado");
-    return null;
-  }
-
-  try {
-    const response = await fetch(`${ApiConstants.PROJECT_PATH}/${projectId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        [ApiConstants.USER_ID_HEADER]: user.id,
-      },
-      body: JSON.stringify(proyecto),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error editando el proyecto: ${response.status}`);
-    }
-
-    const updatedProject: Project = await response.json();
-    return updatedProject;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
 }
 
 export default ProjectModal;

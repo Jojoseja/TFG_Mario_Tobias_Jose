@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 import { useState } from "react";
-import { ApiConstants } from "../constants/ApiConstants";
-import type { User } from "../types/user";
+import { loginRequest } from "../services/authService";
+import { saveStoredUser } from "../services/userStorageService";
 
 function Login() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ function Login() {
   
   const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate("/home") // TODO: Eliminar cuando se vaya a entregar, solo está para cuando inicio el frontend
+    //navigate("/home") // TODO: Eliminar cuando se vaya a entregar, solo está para cuando inicio el frontend
     if (!email || !password) {
       setNotification({
         type: "error",
@@ -29,50 +29,33 @@ function Login() {
     }
 
     try {
-      const response = await fetch (ApiConstants.AUTH_PATH + ApiConstants.LOGIN, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const user = await loginRequest({
+        email,
+        password,
       });
 
-      if (!response.ok) {
-        setNotification({
-          type: "error",
-          text: "Credenciales incorrectas. Por favor, inténtalo de nuevo."
-        });
-        setTimeout(() => {
-          setNotification(null);
-        }, 3000);
-        return;
-      }
-
-      //Guardamos el usuario en localStorage para el inicio de sesión.
-      const user: User = await response.json();
+      saveStoredUser(user);
 
       setNotification({
         type: "success",
-        text: "Inicio de sesión exitoso. Redirigiendo..."
+        text: "Inicio de sesión exitoso. Redirigiendo...",
       });
+
       setTimeout(() => {
         setNotification(null);
-        localStorage.setItem("user", JSON.stringify(user));
         navigate("/home");
-      }, 1500);
-
+      }, 500);
     } catch (error) {
+      console.error("Error al iniciar sesión", error);
+
       setNotification({
         type: "error",
-        text: "Error al iniciar sesión. Por favor, inténtalo de nuevo."
+        text: "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
       });
+
       setTimeout(() => {
         setNotification(null);
       }, 3000);
-      return;
     }
   };
 

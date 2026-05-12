@@ -2,33 +2,21 @@ import { useState, useEffect, useRef } from "react";
 import { MdArchive, MdDelete, MdEdit } from "react-icons/md";
 import "../styles/TaskManager.css";
 import type { CreateTask, Task, UpdateTask } from "../types/task";
-import { ApiConstants } from "../constants/ApiConstants";
 import TaskModal from "./TaskModal";
+import {
+  createTaskRequest,
+  deleteTaskRequest,
+  getTasksRequest,
+  updateTaskRequest,
+} from "../services/taskService";
 
 type TaskManagerProps = {
   variant?: "home" | "project";
+  projectId?: string | null;
 };
 
-function TaskManager({ variant = "home" }: TaskManagerProps) {
-  const [tasks, setTasks] = useState<Task[]>([
-    /*
-    {
-      id: "22222222-2222-2222-2222-222222222222",
-      title: "Tarea de prueba",
-      description: "Esta tarea solo existe en modo desarrollo",
-      archived: false,
-      createdAt: new Date().toISOString(),
-      completedAt: null,
-      archivedAt: null,
-      ownerId: "46d5b12e-7d10-457f-9baf-e4bb7f3c7d6e",
-      parentTaskId: null,
-      status: "TODO",
-      priority: "MEDIUM",
-      projectId: null,
-    },
-    */
-  ]);
-
+function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
@@ -40,13 +28,17 @@ function TaskManager({ variant = "home" }: TaskManagerProps) {
     Record<string, ReturnType<typeof setTimeout>>
   >({});
 
-  // TODO: Descomentar esto para cargar las tareas de la bbdd
+  const currentProjectId = variant === "project" ? projectId : null;
+
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const projectId = getProjectId(variant);
-        const tasksFromDb = await getTasksRequest(projectId);
+        if (variant === "project" && !projectId) {
+          setTasks([]);
+          return;
+        }
 
+        const tasksFromDb = await getTasksRequest(currentProjectId);
         setTasks(tasksFromDb);
       } catch (error) {
         console.error("Error cargando tareas:", error);
@@ -54,7 +46,7 @@ function TaskManager({ variant = "home" }: TaskManagerProps) {
     };
 
     void loadTasks();
-  }, [variant]);
+  }, [variant, projectId, currentProjectId]);
 
   useEffect(() => {
     return () => {
@@ -67,12 +59,15 @@ function TaskManager({ variant = "home" }: TaskManagerProps) {
   const handleAddTask = async () => {
     if (newTask.trim() === "") return;
 
-    const projectId = getProjectId(variant);
+    if (variant === "project" && !projectId) {
+      console.error("No se puede crear una tarea de proyecto sin projectId");
+      return;
+    }
 
     const taskToAdd: CreateTask = {
       title: newTask.trim(),
       description: "",
-      projectId,
+      projectId: currentProjectId,
       parentTaskId: null,
       status: "TODO",
       priority: "MEDIUM",
@@ -340,131 +335,6 @@ function TaskManager({ variant = "home" }: TaskManagerProps) {
       />
     </div>
   );
-}
-
-// Metodo auxiliar para obtener el projectId
-function getProjectId(variant: "home" | "project"): string | null {
-  if (variant !== "project") return null;
-
-  const projectStorage = localStorage.getItem("project");
-
-  if (!projectStorage) return null;
-
-  try {
-    const project = JSON.parse(projectStorage);
-    return project.id ?? null;
-  } catch {
-    return projectStorage;
-  }
-}
-
-// Metodo auxiliar para sacar el userId del localStorage
-function getUserIdFromLocalStorage(): string {
-  const userStorage = localStorage.getItem("user");
-
-  if (!userStorage) {
-    throw new Error("No hay User en localStorage");
-  }
-
-  const user = JSON.parse(userStorage);
-  const userId = user.id;
-
-  if (!userId) {
-    throw new Error("El User de localStorage no tiene id");
-  }
-
-  return userId;
-}
-
-// Metodo para crear una tarea
-async function createTaskRequest(taskToCreate: CreateTask): Promise<Task> {
-  const userId = getUserIdFromLocalStorage();
-
-  const response = await fetch(ApiConstants.TASK_PATH, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      [ApiConstants.USER_ID_HEADER]: userId,
-    },
-    body: JSON.stringify(taskToCreate),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Error creando la tarea");
-  }
-
-  return await response.json();
-}
-
-// Metodo para eliminar una tarea
-async function deleteTaskRequest(taskId: string): Promise<void> {
-  const userId = getUserIdFromLocalStorage();
-
-  const response = await fetch(`${ApiConstants.TASK_PATH}/${taskId}`, {
-    method: "DELETE",
-    headers: {
-      [ApiConstants.USER_ID_HEADER]: userId,
-    },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Error borrando la tarea");
-  }
-}
-
-// Metodo para actualizar una tarea
-async function updateTaskRequest(
-  taskId: string,
-  taskToUpdate: UpdateTask
-): Promise<Task> {
-  const userId = getUserIdFromLocalStorage();
-
-  const response = await fetch(`${ApiConstants.TASK_PATH}/${taskId}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      [ApiConstants.USER_ID_HEADER]: userId,
-    },
-    body: JSON.stringify(taskToUpdate),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Error actualizando la tarea");
-  }
-
-  return await response.json();
-}
-
-// Metodo para recoger todas las tareas de un usuario de la base de datos
-async function getTasksRequest(projectId?: string | null): Promise<Task[]> {
-  const userId = getUserIdFromLocalStorage();
-
-  const params = new URLSearchParams();
-
-  if (projectId) {
-    params.append("projectId", projectId);
-  }
-
-  const url = params.toString()
-    ? `${ApiConstants.TASK_PATH}?${params.toString()}`
-    : ApiConstants.TASK_PATH;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      [ApiConstants.USER_ID_HEADER]: userId,
-    },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Error cargando tareas");
-  }
-
-  return await response.json();
 }
 
 export default TaskManager;
