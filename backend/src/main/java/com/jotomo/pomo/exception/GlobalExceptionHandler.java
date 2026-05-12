@@ -14,7 +14,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.warn("Validation error: {}", ex.getMessage());
+        log.error("Illegal argument exception: {}", ex.getMessage());
+
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Invalid request");
         problemDetail.setDetail(ex.getMessage());
@@ -45,8 +46,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex){
-        log.warn("Error: {}", ex.getMessage());
+    public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        log.warn("User already exists: {}", ex.getMessage());
+
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Invalid request");
         problemDetail.setDetail(ex.getMessage());
@@ -54,8 +56,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ProblemDetail handleUserNotFoundException(UserNotFoundException ex){
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException ex) {
         log.warn("User not found: {}", ex.getMessage());
+
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Invalid request");
         problemDetail.setDetail(ex.getMessage());
@@ -63,7 +66,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IncorrectPassword.class)
-    public ProblemDetail handleIncorrectPasswordException(IncorrectPassword ex){
+    public ProblemDetail handleIncorrectPasswordException(IncorrectPassword ex) {
         log.warn("Incorrect Password: {}", ex.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Invalid request");

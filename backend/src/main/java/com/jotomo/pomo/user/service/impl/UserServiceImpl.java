@@ -13,6 +13,7 @@ import com.jotomo.pomo.user.model.UserEntity;
 import com.jotomo.pomo.user.repository.UserRepository;
 import com.jotomo.pomo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.UUID;
 @Transactional
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -30,41 +32,82 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse save(CreateUserRequest request) {
+        log.info("Creating user: email={}", request.email());
+
         UserEntity userEntity = userMapper.toEntity(request);
-        if (userRepository.existsByEmail(userEntity.getEmail())){
+
+        if (userRepository.existsByEmail(userEntity.getEmail())) {
+            log.warn("User creation rejected: email already exists, email={}", userEntity.getEmail());
             throw new UserAlreadyExistsException();
-        } else {
-            userEntity.setEnabled(true);
-            userEntity.setRole(UserRole.USER);
-            SessionConfiguration sessionConfiguration = sessionConfigurationFactory.defaultConfiguration();
-            userEntity.setSessionConfiguration(sessionConfiguration);
-            sessionConfiguration.setUser(userEntity);
         }
-        return userMapper.toResponse(userRepository.save(userEntity));
+
+        userEntity.setEnabled(true);
+        userEntity.setRole(UserRole.USER);
+
+        SessionConfiguration sessionConfiguration = sessionConfigurationFactory.defaultConfiguration();
+        userEntity.setSessionConfiguration(sessionConfiguration);
+        sessionConfiguration.setUser(userEntity);
+
+        UserEntity saved = userRepository.save(userEntity);
+
+        log.info("User created: userId={}, email={}", saved.getId(), saved.getEmail());
+
+        return userMapper.toResponse(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<UserResponse> findById(UUID userId) {
-        return userRepository.findById(userId).map(userMapper::toResponse);
+        log.debug("Finding user by id: userId={}", userId);
+
+        return userRepository.findById(userId)
+                .map(user -> {
+                    log.debug("User found by id: userId={}", userId);
+                    return userMapper.toResponse(user);
+                });
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<UserResponse> findByEmail(String email) {
-        return userRepository.findByEmail(email).map(userMapper::toResponse);
+        log.debug("Finding user by email: email={}", email);
+
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    log.debug("User found by email: userId={}, email={}", user.getId(), email);
+                    return userMapper.toResponse(user);
+                });
     }
 
     @Override
     public UserResponse update(UpdateUserMeRequest request) {
-        UserEntity user = userRepository.findByEmail(request.email()).orElseThrow(UserNotFoundException::new);
+        log.info("Updating user: email={}", request.email());
+
+        UserEntity user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> {
+                    log.warn("User update rejected: user not found, email={}", request.email());
+                    return new UserNotFoundException();
+                });
+
         userMapper.updateEntity(request, user);
+
+        log.info("User updated: userId={}, email={}", user.getId(), user.getEmail());
+
         return userMapper.toResponse(user);
     }
 
     @Override
     public void deleteById(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException();
-        }
-        userRepository.deleteById(userId);
+        log.info("Deleting user: userId={}", userId);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.warn("User deletion rejected: user not found, userId={}", userId);
+                    return new UserNotFoundException();
+                });
+
+        userRepository.delete(user);
+
+        log.info("User deleted: userId={}", userId);
     }
 }
