@@ -17,7 +17,6 @@ function Register() {
     text: string;
   } | null>(null);
 
-  //TODO: Falta hacer que cuando salta un error, le diga al usuario que ha fallado, tanto como si es por contraseñas o por usuario ya existente.
   const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault(); //Cancela la acción por defecto del formulario
 

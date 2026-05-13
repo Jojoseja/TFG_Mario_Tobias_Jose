@@ -1,5 +1,3 @@
-// src/services/sessionService.ts
-
 import { ApiConstants } from "../constants/ApiConstants";
 import type { SessionRequest, SessionResponse } from "../types/session";
 import { getStoredUserId } from "./userStorageService";
