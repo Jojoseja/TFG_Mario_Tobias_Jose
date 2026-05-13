@@ -3,13 +3,8 @@ import { MdArchive, MdDelete, MdEdit } from "react-icons/md";
 import "../styles/TaskManager.css";
 import type { CreateTask, Task, UpdateTask } from "../types/task";
 import TaskModal from "./TaskModal";
-import {
-  createTaskRequest,
-  deleteTaskRequest,
-  getTasksRequest,
-  updateTaskRequest,
-} from "../services/taskService";
-
+import { createTaskRequest, deleteTaskRequest, getTasksRequest, updateTaskRequest } from "../services/taskService";
+//TODO: Arreglar que aumenta el tamaño de la web en lugar de añadir una barra para deslizar en la lista de las tareas
 type TaskManagerProps = {
   variant?: "home" | "project";
   projectId?: string | null;
@@ -57,6 +52,56 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
     };
   }, []);
 
+  const scheduleTaskArchive = (taskId: string) => {
+    if (archiveTimeoutsRef.current[taskId]) {
+      clearTimeout(archiveTimeoutsRef.current[taskId]);
+    }
+
+    setFinishingTaskIds((prevIds) => {
+      const nextIds = new Set(prevIds);
+      nextIds.add(taskId);
+      return nextIds;
+    });
+
+    archiveTimeoutsRef.current[taskId] = setTimeout(async () => {
+      const archiveTaskRequest: UpdateTask = {
+        archived: true,
+        archivedAt: new Date().toISOString(),
+      };
+
+      try {
+        const archivedTask = await updateTaskRequest(taskId, archiveTaskRequest);
+
+        setTasks((prevTasks) =>
+          prevTasks.map((task) => (task.id === taskId ? archivedTask : task))
+        );
+      } catch (error) {
+        console.error("Error archivando tarea completada:", error);
+      } finally {
+        setFinishingTaskIds((prevIds) => {
+          const nextIds = new Set(prevIds);
+          nextIds.delete(taskId);
+          return nextIds;
+        });
+
+        delete archiveTimeoutsRef.current[taskId];
+      }
+    }, 1000);
+  };
+
+  const cancelScheduledArchive = (taskId: string) => {
+    if (archiveTimeoutsRef.current[taskId]) {
+      clearTimeout(archiveTimeoutsRef.current[taskId]);
+      delete archiveTimeoutsRef.current[taskId];
+    }
+
+    setFinishingTaskIds((prevIds) => {
+      const nextIds = new Set(prevIds);
+      nextIds.delete(taskId);
+      return nextIds;
+    });
+  };
+
   const handleAddTask = async () => {
     if (newTask.trim() === "") return;
 
@@ -86,6 +131,8 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
 
   const handleDeleteTask = async (taskToDelete: Task) => {
     try {
+      cancelScheduledArchive(taskToDelete.id);
+
       await deleteTaskRequest(taskToDelete.id);
 
       setTasks((prevTasks) =>
@@ -101,11 +148,40 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
     taskToUpdate: UpdateTask
   ): Promise<void> => {
     try {
-      const updatedTask = await updateTaskRequest(taskId, taskToUpdate);
+      const previousTask = tasks.find((task) => task.id === taskId);
+
+      const taskToUpdateWithCompletedAt: UpdateTask = {
+        ...taskToUpdate,
+      };
+
+      if (taskToUpdate.status === "DONE") {
+        taskToUpdateWithCompletedAt.completedAt =
+          taskToUpdate.completedAt ?? new Date().toISOString();
+      }
+
+      if (taskToUpdate.status && taskToUpdate.status !== "DONE") {
+        taskToUpdateWithCompletedAt.completedAt = null;
+      }
+
+      const updatedTask = await updateTaskRequest(
+        taskId,
+        taskToUpdateWithCompletedAt
+      );
 
       setTasks((prevTasks) =>
         prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
       );
+
+      const wasNotDone = previousTask?.status !== "DONE";
+      const isNowDone = updatedTask.status === "DONE";
+
+      if (wasNotDone && isNowDone) {
+        scheduleTaskArchive(taskId);
+      }
+
+      if (updatedTask.status !== "DONE") {
+        cancelScheduledArchive(taskId);
+      }
     } catch (error) {
       console.error("Error actualizando tarea:", error);
     }
@@ -118,6 +194,8 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
     };
 
     try {
+      cancelScheduledArchive(taskToArchive.id);
+
       const updatedTask = await updateTaskRequest(
         taskToArchive.id,
         taskToUpdate
@@ -137,16 +215,7 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
     const isAlreadyDone = taskToComplete.status === "DONE";
 
     if (isAlreadyDone) {
-      if (archiveTimeoutsRef.current[taskToComplete.id]) {
-        clearTimeout(archiveTimeoutsRef.current[taskToComplete.id]);
-        delete archiveTimeoutsRef.current[taskToComplete.id];
-      }
-
-      setFinishingTaskIds((prevIds) => {
-        const nextIds = new Set(prevIds);
-        nextIds.delete(taskToComplete.id);
-        return nextIds;
-      });
+      cancelScheduledArchive(taskToComplete.id);
 
       const taskToUpdate: UpdateTask = {
         status: "TODO",
@@ -188,50 +257,29 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
         )
       );
 
-      setFinishingTaskIds((prevIds) => {
-        const nextIds = new Set(prevIds);
-        nextIds.add(taskToComplete.id);
-        return nextIds;
-      });
-
-      archiveTimeoutsRef.current[taskToComplete.id] = setTimeout(async () => {
-        const archiveTaskRequest: UpdateTask = {
-          archived: true,
-          archivedAt: new Date().toISOString(),
-        };
-
-        try {
-          const archivedTask = await updateTaskRequest(
-            taskToComplete.id,
-            archiveTaskRequest
-          );
-
-          setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-              task.id === taskToComplete.id ? archivedTask : task
-            )
-          );
-
-          setFinishingTaskIds((prevIds) => {
-            const nextIds = new Set(prevIds);
-            nextIds.delete(taskToComplete.id);
-            return nextIds;
-          });
-        } catch (error) {
-          console.error("Error archivando tarea completada:", error);
-
-          setFinishingTaskIds((prevIds) => {
-            const nextIds = new Set(prevIds);
-            nextIds.delete(taskToComplete.id);
-            return nextIds;
-          });
-        } finally {
-          delete archiveTimeoutsRef.current[taskToComplete.id];
-        }
-      }, 1000);
+      scheduleTaskArchive(taskToComplete.id);
     } catch (error) {
       console.error("Error completando tarea:", error);
     }
+  };
+
+  const priorityOrder: Record<Task["priority"], number> = {
+    HIGH: 1,
+    MEDIUM: 2,
+    LOW: 3,
+  };
+
+  const statusLabel: Record<Task["status"], string> = {
+    TODO: "Pendiente",
+    IN_PROGRESS: "En progreso",
+    BLOCKED: "Bloqueada",
+    DONE: "Completada",
+  };
+
+  const priorityLabel: Record<Task["priority"], string> = {
+    HIGH: "Alta",
+    MEDIUM: "Media",
+    LOW: "Baja",
   };
 
   const isTaskCreationDisabled = needsProject && !currentProjectId;
@@ -247,19 +295,29 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
         <ul className="task-list">
           {tasks
             .filter((task) => !task.archived)
+            .sort((a, b) => {
+              if (a.status === "DONE" && b.status !== "DONE") return 1;
+              if (a.status !== "DONE" && b.status === "DONE") return -1;
+
+              return priorityOrder[a.priority] - priorityOrder[b.priority];
+            })
             .map((task) => (
               <li
                 key={task.id}
-                className={`task-item ${
-                  finishingTaskIds.has(task.id) ? "task-item--finishing" : ""
-                }`}
+                className={`task-item 
+                  task-item--priority-${task.priority.toLowerCase()}
+                  task-item--status-${task.status.toLowerCase()}
+                  ${finishingTaskIds.has(task.id) ? "task-item--finishing" : ""}
+                `}
               >
                 <div className="task-main-content">
                   <input
                     type="checkbox"
                     id={`task-${task.id}`}
                     checked={task.status === "DONE"}
-                    disabled={finishingTaskIds.has(task.id)}
+                    disabled={
+                      finishingTaskIds.has(task.id) || task.status === "BLOCKED"
+                    }
                     onChange={() => void handleCompleteTask(task)}
                   />
 
@@ -269,6 +327,20 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
                     {task.description && (
                       <p className="task-description">{task.description}</p>
                     )}
+
+                    <div className="task-meta">
+                      <span
+                        className={`task-status task-status--${task.status.toLowerCase()}`}
+                      >
+                        {statusLabel[task.status]}
+                      </span>
+
+                      <span
+                        className={`task-priority task-priority--${task.priority.toLowerCase()}`}
+                      >
+                        Prioridad {priorityLabel[task.priority]}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
