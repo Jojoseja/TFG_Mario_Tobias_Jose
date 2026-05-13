@@ -28,12 +28,13 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
     Record<string, ReturnType<typeof setTimeout>>
   >({});
 
-  const currentProjectId = variant === "project" ? projectId : null;
+  const currentProjectId = projectId ?? null;
+  const needsProject = variant === "project" || variant === "home";
 
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        if (variant === "project" && !projectId) {
+        if (needsProject && !currentProjectId) {
           setTasks([]);
           return;
         }
@@ -46,7 +47,7 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
     };
 
     void loadTasks();
-  }, [variant, projectId, currentProjectId]);
+  }, [needsProject, currentProjectId]);
 
   useEffect(() => {
     return () => {
@@ -59,8 +60,8 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
   const handleAddTask = async () => {
     if (newTask.trim() === "") return;
 
-    if (variant === "project" && !projectId) {
-      console.error("No se puede crear una tarea de proyecto sin projectId");
+    if (needsProject && !currentProjectId) {
+      console.error("No se puede crear una tarea sin proyecto asociado");
       return;
     }
 
@@ -233,6 +234,8 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
     }
   };
 
+  const isTaskCreationDisabled = needsProject && !currentProjectId;
+
   return (
     <div className={`task-panel task-panel--${variant}`}>
       <div className="task-panel-header">
@@ -308,8 +311,13 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
       <div className="task-panel-footer">
         <input
           type="text"
-          placeholder="Insertar nueva tarea..."
+          placeholder={
+            isTaskCreationDisabled
+              ? "No hay proyecto disponible"
+              : "Insertar nueva tarea..."
+          }
           value={newTask}
+          disabled={isTaskCreationDisabled}
           onChange={(e) => setNewTask(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -321,6 +329,7 @@ function TaskManager({ variant = "home", projectId = null }: TaskManagerProps) {
         <button
           className="primary-button-task"
           type="button"
+          disabled={isTaskCreationDisabled}
           onClick={() => void handleAddTask()}
         >
           Agregar tarea

@@ -3,20 +3,20 @@ import { useState } from "react";
 import PomodoroTimer from "../components/PomodoroTimer";
 import TaskManager from "../components/TaskManager";
 import type { User } from "../types/user";
+import type { Project } from "../types/project";
+import { getStoredUser } from "../services/userStorageService";
+import { getStoredLatestProject } from "../services/latestProjectStorageService";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
 function Home() {
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("work");
 
-  const userStorage = localStorage.getItem("user");
-  const user: User | null = userStorage ? JSON.parse(userStorage) : null;
+  const user: User | null = getStoredUser();
+  const latestProject: Project | null = getStoredLatestProject();
 
-  //Variable para el proyecto actual en el que te encuentras
-  //TODO: Cambiar esto porque cargue el projecto y ponga el nombre del último proyecto trabajado, debe hacerlo por la última tarea completada de un proyecto
-  const projectName = "Alemán";
+  const projectName = latestProject?.name ?? "Sin proyecto";
 
-  //Texto de la sesión actual
   const currentBadgeText =
     sessionStatus === "work"
       ? "En pomodoro"
@@ -24,12 +24,7 @@ function Home() {
       ? "En descanso corto"
       : "En descanso largo";
 
-  //Texto del próximo modo
-  const nextBadgeText =
-    sessionStatus === "work"
-      ? "Descanso"
-      : "Pomodoro";
-
+  const nextBadgeText = sessionStatus === "work" ? "Descanso" : "Pomodoro";
 
   return (
     <>
@@ -79,20 +74,20 @@ function Home() {
               <h2>Próximo modo</h2>
               <span
                 className={`status-badge ${
-                    sessionStatus === "work"
-                        ? "status-badge--shortRest"
-                        : "status-badge--work"
+                  sessionStatus === "work"
+                    ? "status-badge--shortRest"
+                    : "status-badge--work"
                 }`}
               >
                 {nextBadgeText}
-            </span>
+              </span>
             </div>
           </div>
 
           <PomodoroTimer onModeChange={setSessionStatus} />
         </div>
 
-        <TaskManager variant="home"/>
+        <TaskManager variant="home" projectId={latestProject?.id ?? null} />
       </section>
     </>
   );
