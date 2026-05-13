@@ -82,20 +82,20 @@ class UserServiceImplUnitTest {
 
     @Test
     void update_ShouldUpdateUser_WhenUserIsFound() {
-        userService.save(createUserRequest);
-        UpdateUserMeRequest request = new UpdateUserMeRequest(UPDATED_USERNAME, USER_EMAIL);
+        UserResponse savedUser = userService.save(createUserRequest);
+        UpdateUserMeRequest request = new UpdateUserMeRequest(UPDATED_USERNAME, null);
 
-        UserResponse response = userService.update(request);
+        UserResponse response = userService.update(savedUser.id(), request);
 
         assertEquals(USER_EMAIL, response.email());
         assertEquals(UPDATED_USERNAME, response.username());
     }
 
     @Test
-    void update_ThrowsUserNotFound_WhenEmailDoesntExist() {
-        UpdateUserMeRequest request = new UpdateUserMeRequest(UPDATED_USERNAME, NON_MATCHING_EMAIL);
+    void update_ThrowsUserNotFound_WhenIdDoesntExist() {
+        UpdateUserMeRequest request = new UpdateUserMeRequest(UPDATED_USERNAME, null);
 
-        assertThrows(UserNotFoundException.class, () -> userService.update(request));
+        assertThrows(UserNotFoundException.class, () -> userService.update(NON_MATCHING_ID, request));
     }
 
     @Test
