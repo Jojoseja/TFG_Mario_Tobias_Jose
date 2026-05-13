@@ -10,6 +10,59 @@ import { MdDarkMode, MdDelete, MdEdit } from "react-icons/md";
 import { CiLight } from "react-icons/ci";
 import { getProjectsRequest } from "../services/projectService";
 import { getStoredUser, removeStoredUser } from "../services/userStorageService";
+import { finishSessionRequest } from "../services/sessionService";
+import type { SessionRequest } from "../types/session";
+import { secondsToRoundedMinutes } from "../utils/timeUtils";
+
+type SessionStatus = "work" | "shortRest" | "longRest";
+
+type UsedSecondsByStatus = Record<SessionStatus, number>;
+
+type StoredPomodoroTimerState = {
+  activeSessionId: string;
+  sessionConfigurationId: string | null;
+  usedSeconds: UsedSecondsByStatus;
+};
+
+const POMODORO_TIMER_STORAGE_KEY = "pomodoroTimerState";
+
+function getPomodoroTimerStorageKey(userId: string): string {
+  return `${POMODORO_TIMER_STORAGE_KEY}:${userId}`;
+}
+
+function getStoredPomodoroTimerStateForUser(
+  userId: string
+): StoredPomodoroTimerState | null {
+  const storedState = localStorage.getItem(getPomodoroTimerStorageKey(userId));
+
+  if (!storedState) return null;
+
+  try {
+    return JSON.parse(storedState) as StoredPomodoroTimerState;
+  } catch (error) {
+    console.error("Error leyendo el estado local del Pomodoro", error);
+    localStorage.removeItem(getPomodoroTimerStorageKey(userId));
+    return null;
+  }
+}
+
+function clearStoredPomodoroTimerStateForUser(userId: string): void {
+  localStorage.removeItem(getPomodoroTimerStorageKey(userId));
+}
+
+function buildLogoutFinishSessionRequest(
+  sessionConfigurationId: string,
+  usedSeconds: UsedSecondsByStatus
+): SessionRequest {
+  return {
+    sessionConfigurationId,
+    endedAt: new Date().toISOString(),
+    workMinutesUsed: secondsToRoundedMinutes(usedSeconds.work),
+    shortBreakDurationUsed: secondsToRoundedMinutes(usedSeconds.shortRest),
+    longBreakDurationUsed: secondsToRoundedMinutes(usedSeconds.longRest),
+    pomodoros: [],
+  };
+}
 
 function Layout() {
   const location = useLocation();
@@ -33,6 +86,7 @@ function Layout() {
   const [projectModalMode, setProjectModalMode] = useState<"create" | "edit">("create");
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   
   const user = getStoredUser();
 
@@ -66,9 +120,39 @@ function Layout() {
     }
   }, [lightMode]);
 
-  const handleLogout = () => {
-    removeStoredUser();
-    navigate("/login");
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+
+    try {
+      if (user?.id) {
+        const storedTimerState = getStoredPomodoroTimerStateForUser(user.id);
+
+        if (
+          storedTimerState?.activeSessionId &&
+          storedTimerState.sessionConfigurationId
+        ) {
+          await finishSessionRequest(
+            storedTimerState.activeSessionId,
+            buildLogoutFinishSessionRequest(
+              storedTimerState.sessionConfigurationId,
+              storedTimerState.usedSeconds
+            )
+          );
+        }
+
+        clearStoredPomodoroTimerStateForUser(user.id);
+      }
+    } catch (error) {
+      console.error("Error finalizando la sesión Pomodoro al cerrar sesión", error);
+    } finally {
+      // Limpieza de la clave antigua usada antes de separar el estado por usuario.
+      localStorage.removeItem(POMODORO_TIMER_STORAGE_KEY);
+      removeStoredUser();
+      navigate("/login", { replace: true });
+      setIsLoggingOut(false);
+    }
   };
 
   const openCreateProjectModal = () => {
@@ -208,9 +292,10 @@ function Layout() {
 
           <button
             className="logout-button"
-            onClick={handleLogout}
-            title="Cerrar sesión"
+            onClick={() => void handleLogout()}
+            title={isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
             type="button"
+            disabled={isLoggingOut}
           >
             <IoIosLogOut />
           </button>
