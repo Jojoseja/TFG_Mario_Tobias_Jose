@@ -11,6 +11,7 @@ import { getSessionConfigurationRequest, putSessionConfigurationRequest } from "
 import { finishSessionRequest, startSessionRequest } from "../services/sessionService";
 import { createPomodoroRequest, updatePomodoroRequest } from "../services/pomodoroService";
 import { secondsToRoundedMinutes } from "../utils/timeUtils";
+import { getStoredUser } from "../services/userStorageService";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
@@ -27,6 +28,7 @@ type PomodoroTimerProps = {
 };
 
 type StoredPomodoroTimerState = {
+  userId: string;
   activeSessionId: string;
   activePomodoro: PomodoroResponse | null;
   pomodoroOrderIndex: number;
@@ -635,7 +637,8 @@ function shouldAutoStartSession(nextStatus: SessionStatus): boolean {
 }
 
 function getStoredLocalAppSettings(): LocalAppSettings {
-  const storedSettings = localStorage.getItem(LOCAL_APP_SETTINGS_STORAGE_KEY);
+  const storageKey = getUserScopedStorageKey(LOCAL_APP_SETTINGS_STORAGE_KEY);
+  const storedSettings = localStorage.getItem(storageKey);
 
   if (!storedSettings) {
     return defaultLocalAppSettings;
@@ -648,21 +651,50 @@ function getStoredLocalAppSettings(): LocalAppSettings {
     };
   } catch (error) {
     console.error("Error leyendo los ajustes locales", error);
+    localStorage.removeItem(storageKey);
     return defaultLocalAppSettings;
   }
 }
 
-function saveStoredPomodoroTimerState(state: StoredPomodoroTimerState) {
-  localStorage.setItem(POMODORO_TIMER_STORAGE_KEY, JSON.stringify(state));
+function saveStoredPomodoroTimerState(
+  state: Omit<StoredPomodoroTimerState, "userId">
+) {
+  const userId = getStoredUser()?.id;
+
+  if (!userId) return;
+
+  localStorage.setItem(
+    getUserScopedStorageKey(POMODORO_TIMER_STORAGE_KEY),
+    JSON.stringify({
+      ...state,
+      userId,
+    })
+  );
 }
 
 function getStoredPomodoroTimerState(): StoredPomodoroTimerState | null {
-  const storedState = localStorage.getItem(POMODORO_TIMER_STORAGE_KEY);
+  const userId = getStoredUser()?.id;
+
+  if (!userId) return null;
+
+  const storageKey = getUserScopedStorageKey(POMODORO_TIMER_STORAGE_KEY);
+  const storedState = localStorage.getItem(storageKey);
+
+  // Limpia la clave antigua compartida entre usuarios para evitar restaurar
+  // sesiones de otro usuario creadas con versiones anteriores.
+  localStorage.removeItem(POMODORO_TIMER_STORAGE_KEY);
 
   if (!storedState) return null;
 
   try {
-    return JSON.parse(storedState) as StoredPomodoroTimerState;
+    const parsedState = JSON.parse(storedState) as StoredPomodoroTimerState;
+
+    if (parsedState.userId !== userId) {
+      localStorage.removeItem(storageKey);
+      return null;
+    }
+
+    return parsedState;
   } catch (error) {
     console.error("Error leyendo el estado guardado del Pomodoro", error);
     clearStoredPomodoroTimerState();
@@ -671,7 +703,19 @@ function getStoredPomodoroTimerState(): StoredPomodoroTimerState | null {
 }
 
 function clearStoredPomodoroTimerState() {
+  const userId = getStoredUser()?.id;
+
+  if (userId) {
+    localStorage.removeItem(getUserScopedStorageKey(POMODORO_TIMER_STORAGE_KEY));
+  }
+
   localStorage.removeItem(POMODORO_TIMER_STORAGE_KEY);
+}
+
+function getUserScopedStorageKey(baseKey: string): string {
+  const userId = getStoredUser()?.id;
+
+  return userId ? `${baseKey}:${userId}` : baseKey;
 }
 
 export default PomodoroTimer;

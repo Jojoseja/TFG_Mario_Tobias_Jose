@@ -46,7 +46,27 @@
   overflow-y: auto;
   overflow-x: hidden;
   margin-bottom: 20px;
-  padding-right: 6px;
+  padding-right: 10px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.task-panel-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+.task-panel-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-panel-list::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
+}
+
+.task-panel-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(115, 216, 255, 0.55);
 }
 
 .task-list {
@@ -340,6 +360,7 @@
 
 .task-panel-footer input {
   flex: 1;
+  min-width: 0;
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--input-border);
@@ -376,6 +397,7 @@
   box-shadow:
     0 10px 22px rgba(115, 216, 255, 0.1),
     0 10px 22px rgba(177, 130, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .primary-button-task:hover {
@@ -387,4 +409,95 @@
   opacity: 0.55;
   cursor: not-allowed;
   transform: none;
+}
+
+@media (max-width: 900px) {
+  .task-panel--home,
+  .task-panel--project {
+    height: auto;
+    max-height: none;
+    min-height: 460px;
+    padding: 18px;
+    overflow: visible;
+  }
+
+  .task-panel-list {
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .task-panel-header {
+    margin-bottom: 16px;
+  }
+
+  .task-panel-header h1 {
+    font-size: 1.45rem;
+  }
+
+  .task-item {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .task-main-content {
+    gap: 10px;
+  }
+
+  .task-actions {
+    gap: 4px;
+  }
+
+  .task-action-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .task-panel-footer {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .task-panel--home,
+  .task-panel--project {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .task-panel-list {
+    max-height: 380px;
+  }
+
+  .task-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: flex-start;
+  }
+
+  .task-main-content {
+    min-width: 0;
+  }
+
+  .task-actions {
+    flex-direction: column;
+  }
+
+  .task-meta {
+    gap: 0.35rem;
+  }
+
+  .task-status,
+  .task-priority {
+    font-size: 0.7rem;
+  }
+
+  .task-panel-footer {
+    flex-direction: column;
+  }
+
+  .task-panel-footer input,
+  .primary-button-task {
+    width: 100%;
+  }
 }

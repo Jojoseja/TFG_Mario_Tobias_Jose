@@ -5,13 +5,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .timer-circle {
-  width: clamp(260px, min(26vw, 44vh), 390px);
-  height: clamp(260px, min(26vw, 44vh), 390px);
-  margin: 20px auto 28px;
+  width: clamp(220px, min(22vw, 34vh), 340px);
+  height: clamp(220px, min(22vw, 34vh), 340px);
+  margin: 12px auto 20px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -82,6 +82,7 @@
   gap: 14px;
   flex-wrap: wrap;
   flex-shrink: 0;
+  padding-bottom: 4px;
 }
 
 .primary-button,
@@ -164,5 +165,86 @@
   to {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 900px) {
+  .focus-panel .pomodoro-timer,
+  .pomodoro-timer--project {
+    overflow: visible;
+  }
+
+  .timer-circle {
+    width: clamp(220px, 58vw, 320px);
+    height: clamp(220px, 58vw, 320px);
+    margin: 18px auto 22px;
+  }
+
+  .pomodoro-timer--project .timer-circle {
+    width: clamp(230px, 62vw, 340px);
+    height: clamp(230px, 62vw, 340px);
+    margin: 18px auto 24px;
+  }
+
+  .timer-circle h3 {
+    font-size: clamp(2.4rem, 12vw, 3.6rem);
+  }
+
+  .pomodoro-timer--project .timer-circle h3 {
+    font-size: clamp(2.5rem, 12vw, 3.8rem);
+  }
+
+  .timer-actions {
+    gap: 10px;
+    padding-bottom: 4px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    padding: 11px 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .timer-circle {
+    width: min(76vw, 280px);
+    height: min(76vw, 280px);
+    margin: 16px auto 20px;
+  }
+
+  .pomodoro-timer--project .timer-circle {
+    width: min(76vw, 290px);
+    height: min(76vw, 290px);
+  }
+
+  .timer-circle h3 {
+    font-size: clamp(2.2rem, 13vw, 3.1rem);
+  }
+
+  .timer-circle p {
+    font-size: 0.9rem;
+  }
+
+  .pomo-settings-button {
+    font-size: 1.5rem;
+  }
+
+  .timer-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .notification-banner {
+    top: 12px;
+    max-width: calc(100vw - 24px);
+    padding: 12px 16px;
+    font-size: 0.9rem;
   }
 }

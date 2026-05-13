@@ -7,10 +7,45 @@ import DurationInput from "../components/DurationInput";
 import { getStoredUser, saveStoredUser } from "../services/userStorageService";
 import { patchUserMeRequest } from "../services/userService";
 import type { Statistics } from "../types/statistics";
-import {getStatistics} from "../services/statistics.ts";
+import {getStatistics} from "../services/statisticsService.ts";
 import {getProjectsRequest} from "../services/projectService.ts";
 import type {Project} from "../types/project.ts";
 
+
+const LOCAL_APP_SETTINGS_STORAGE_KEY = "localAppSettings";
+
+function getUserScopedStorageKey(baseKey: string): string {
+  const userId = getStoredUser()?.id;
+
+  return userId ? `${baseKey}:${userId}` : baseKey;
+}
+
+function getStoredLocalAppSettings(): LocalAppSettings {
+  const storageKey = getUserScopedStorageKey(LOCAL_APP_SETTINGS_STORAGE_KEY);
+  const storedSettings = localStorage.getItem(storageKey);
+
+  if (!storedSettings) {
+    return defaultLocalAppSettings;
+  }
+
+  try {
+    return {
+      ...defaultLocalAppSettings,
+      ...(JSON.parse(storedSettings) as Partial<LocalAppSettings>),
+    };
+  } catch (error) {
+    console.error("Error leyendo los ajustes locales", error);
+    localStorage.removeItem(storageKey);
+    return defaultLocalAppSettings;
+  }
+}
+
+function saveStoredLocalAppSettings(settings: LocalAppSettings): void {
+  localStorage.setItem(
+    getUserScopedStorageKey(LOCAL_APP_SETTINGS_STORAGE_KEY),
+    JSON.stringify(settings)
+  );
+}
 
 //Variable para guardar la configuración en el localStorage
 const defaultLocalAppSettings: LocalAppSettings = {
@@ -35,15 +70,7 @@ function Settings() {
     useState<SessionConfiguration | null>(null);
 
   const [localAppSettings, setLocalAppSettings] = useState<LocalAppSettings>(
-    () => {
-      const storedSettings = localStorage.getItem("localAppSettings");
-
-      if (!storedSettings) {
-        return defaultLocalAppSettings;
-      }
-
-      return JSON.parse(storedSettings);
-    }
+    () => getStoredLocalAppSettings()
   );
 
   const [lightMode, setLightMode] = useState(() => {
@@ -104,7 +131,7 @@ function Settings() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("localAppSettings", JSON.stringify(localAppSettings));
+    saveStoredLocalAppSettings(localAppSettings);
   }, [localAppSettings]);
 
   useEffect(() => {
