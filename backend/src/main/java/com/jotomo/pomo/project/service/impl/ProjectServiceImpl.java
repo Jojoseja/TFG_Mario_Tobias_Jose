@@ -205,7 +205,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         UserEntity user = getUser(userId);
 
-        Optional<Task> task = taskRepository.findTopByOwnerOrderByCompletedAtDesc(user);
+        Optional<Task> task = taskRepository.findTopByOwnerAndCompletedAtIsNotNullOrderByCompletedAtDesc(user);
         Project project = task.orElseThrow(() -> {
             log.info("No such task was found for user {}", userId);
             return new NoSuchElementException();
