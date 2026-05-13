@@ -1,0 +1,1 @@
+![Diagrama de entidades](./Diagrama%20Entidades1-1.drawio.png)
