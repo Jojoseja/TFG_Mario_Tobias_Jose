@@ -56,18 +56,19 @@ function Home() {
         <div className="stat-card">
           <h3>Tiempo hoy</h3>
           <p>{formatSeconds(statistics?.timeToday)}</p>
-          <span>Tiempo en el foco</span>
+          <span>Tiempo de concentracion</span>
         </div>
 
         <div className="stat-card">
           <h3>Pomodoros</h3>
-          <p>7</p>
-          <span>{statistics?.pomodorosCompleted ?? "--"}</span>
+          <p>{statistics?.pomodorosCompleted ?? "--"}</p>
+          <span>Eres el mejor</span>
         </div>
 
         <div className="stat-card">
           <h3>Tareas completadas</h3>
           <p>{statistics?.taskCompleted ?? "--"}</p>
+          <span>Sigue asi!!<span/>
         </div>
       </section>
 
