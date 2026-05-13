@@ -80,12 +80,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse update(UpdateUserMeRequest request) {
-        log.info("Updating user: email={}", request.email());
+    public UserResponse update(UUID userId, UpdateUserMeRequest request) {
+        log.info("Updating user: userId={}", userId);
 
-        UserEntity user = userRepository.findByEmail(request.email())
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    log.warn("User update rejected: user not found, email={}", request.email());
+                    log.warn("User update rejected: user not found, userId={}", userId);
                     return new UserNotFoundException();
                 });
 

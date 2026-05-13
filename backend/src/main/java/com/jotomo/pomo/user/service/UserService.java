@@ -15,7 +15,7 @@ public interface UserService {
 
     Optional<UserResponse> findByEmail(final String email);
 
-    UserResponse update(final UpdateUserMeRequest request);
+    UserResponse update(final UUID userId, UpdateUserMeRequest request);
 
     void deleteById(final UUID userId);
 }

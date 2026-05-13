@@ -42,8 +42,11 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserMeRequest request){
-        return ResponseEntity.ok(userService.update(request));
+    public ResponseEntity<UserResponse> updateUser(
+            @RequestHeader(ApiConstants.USER_ID_HEADER) UUID userId,
+            @Valid @RequestBody UpdateUserMeRequest request
+    ){
+        return ResponseEntity.ok(userService.update(userId, request));
     }
 
     @DeleteMapping(ApiConstants.PATH_ID)

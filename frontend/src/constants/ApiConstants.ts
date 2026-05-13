@@ -8,6 +8,7 @@ export class ApiConstants {
     static readonly SESSION_PATH = ApiConstants.BASE_PATH + "/session";
     static readonly SESSION_CONFIGURATION_PATH = ApiConstants.BASE_PATH + "/session-configuration";
     static readonly POMODORO = ApiConstants.BASE_PATH + "/pomodoro";
+    static readonly STATISTICS_PATH = ApiConstants.BASE_PATH + "/statistics";
 
     static readonly USER_ID_HEADER = "X-User-Id";
 

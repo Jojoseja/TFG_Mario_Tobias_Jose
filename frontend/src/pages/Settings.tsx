@@ -6,6 +6,11 @@ import type { LocalAppSettings } from "../types/settings";
 import DurationInput from "../components/DurationInput";
 import { getStoredUser, saveStoredUser } from "../services/userStorageService";
 import { patchUserMeRequest } from "../services/userService";
+import type { Statistics } from "../types/statistics";
+import {getStatistics} from "../services/statistics.ts";
+import {getProjectsRequest} from "../services/projectService.ts";
+import type {Project} from "../types/project.ts";
+
 
 //Variable para guardar la configuración en el localStorage
 const defaultLocalAppSettings: LocalAppSettings = {
@@ -20,6 +25,9 @@ const defaultLocalAppSettings: LocalAppSettings = {
 function Settings() {
   const [user, setUser] = useState(() => getStoredUser());
   const [username, setUsername] = useState(user?.username ?? "");
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+
 
   const [sessionConfiguration, setSessionConfiguration] =
     useState<SessionConfiguration | null>(null);
@@ -49,6 +57,31 @@ function Settings() {
 
   const [sessionConfigMessage, setSessionConfigMessage] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
+
+  const formatSeconds = (segundos: number | null | undefined): string => {
+    if (segundos == null) return "--";
+
+    const horas = Math.floor(segundos / 3600);
+    const minutos = Math.floor((segundos % 3600) / 60);
+
+    if (horas > 0 && minutos > 0) return `${horas} h ${minutos} min`;
+    if (horas > 0) return `${horas} h`;
+    return `${minutos} min`;
+  }
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const loadedProjects = await getProjectsRequest();
+        setProjects(loadedProjects);
+      } catch (error) {
+        console.error("Error cargando proyectos", error);
+      }
+    };
+
+    void loadProjects();
+  }, []);
+
 
   useEffect(() => {
     const loadSessionConfiguration = async () => {
@@ -83,6 +116,20 @@ function Settings() {
       localStorage.setItem("theme", "dark");
     }
   }, [lightMode]);
+
+  useEffect(() => {
+    const loadStatistics = async () => {
+      try {
+        const loadedStatistics = await getStatistics();
+        setStatistics(loadedStatistics);
+      } catch (error) {
+        console.error("Error cargando estadísticas", error);
+      }
+    };
+
+    void loadStatistics();
+  }, []);
+
 
   const updateSessionConfiguration = <K extends keyof SessionConfiguration>(
     key: K,
@@ -204,6 +251,11 @@ function Settings() {
   const hasUnsavedSessionConfiguration =
     JSON.stringify(sessionConfiguration) !==
     JSON.stringify(savedSessionConfiguration);
+
+  const mostWorkedProjectName =
+      projects.find((project) => project.id === statistics?.mostWorkedProject)
+          ?.name ?? "--";
+
 
   return (
     <section className="settings-page">
@@ -392,17 +444,32 @@ function Settings() {
           <div className="settings-stats-grid">
             <div className="settings-stat">
               <span>Sesiones completadas</span>
-              <strong>0</strong>
+              <strong>{statistics?.completedSessions ?? "--"}</strong>
             </div>
 
             <div className="settings-stat">
               <span>Tiempo total enfocado</span>
-              <strong>0 h</strong>
+              <strong>{formatSeconds(statistics?.totalFocusedTime)}</strong>
             </div>
 
             <div className="settings-stat">
               <span>Proyecto más trabajado</span>
-              <strong>-</strong>
+              <strong>{mostWorkedProjectName}</strong>
+            </div>
+
+            <div className="settings-stat">
+              <span>Tiempo hoy</span>
+              <strong>{formatSeconds(statistics?.timeToday)}</strong>
+            </div>
+
+            <div className="settings-stat">
+              <span>Pomodoros completados</span>
+              <strong>{statistics?.pomodorosCompleted ?? "--"}</strong>
+            </div>
+
+            <div className="settings-stat">
+              <span>tareas completadas</span>
+              <strong>{statistics?.taskCompleted ?? "--"}</strong>
             </div>
           </div>
         </article>
