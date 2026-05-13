@@ -70,18 +70,7 @@ function Layout() {
   const isSettingsPage = location.pathname.startsWith("/ajustes");
 
   const [projectsOpen, setProjectsOpen] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([
-    /* //TODO: Borrar esto en la entrega, es para mokear un proyecto
-    {
-      id: "11111111-1111-1111-1111-111111111111",
-      name: "Proyecto de prueba",
-      description: "Este proyecto solo existe en modo desarrollo",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      ownerId: "46d5b12e-7d10-457f-9baf-e4bb7f3c7d6e",
-    }
-      */
-  ]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [projectModalMode, setProjectModalMode] = useState<"create" | "edit">("create");
@@ -96,8 +85,7 @@ function Layout() {
   });
   
 
-  //Descomentar para conectar los proyectos con el backend, se comenta para cuando quieres estar en modo dev solo con el front
-  
+
   useEffect(() => {
     const loadProjects = async () => {
       try {

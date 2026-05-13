@@ -115,10 +115,6 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-
-              <p className="login-links">
-                <Link to="/forgot-password">¿Contraseña olvidada?</Link>
-              </p>
             </div>
 
             <button type="submit" className="login-button">

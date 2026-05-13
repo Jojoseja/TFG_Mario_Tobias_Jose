@@ -15,8 +15,8 @@ function ProjectPage() {
   const { projectId } = useParams();
   const { projects } = useOutletContext<OutletContext>();
 
-  const [sessionStatus, setSessionStatus] = useState<SessionStatus>("work");
-  
+  const [, setSessionStatus] = useState<SessionStatus>("work");
+
   const project = projects.find(
     (project) => project.id === String(projectId)
   );

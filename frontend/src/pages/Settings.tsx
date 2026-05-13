@@ -55,8 +55,6 @@ const defaultLocalAppSettings: LocalAppSettings = {
   notificationsEnabled: true,
 };
 
-//TODO: Falta hacer que el backend pida el userId en el header del metodo de actualizar usuario (para actualizar el nombre), porque ahora mismo no funciona el actualizar un usuario
-//TODO: Falta modificar el css para que se vean las 3 tarjetas de estadísticas de abajo más bonitas
 function Settings() {
   const [user, setUser] = useState(() => getStoredUser());
   const [username, setUsername] = useState(user?.username ?? "");

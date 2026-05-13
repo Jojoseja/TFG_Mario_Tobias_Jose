@@ -4,7 +4,6 @@ import "../styles/TaskManager.css";
 import type { CreateTask, Task, UpdateTask } from "../types/task";
 import TaskModal from "./TaskModal";
 import { createTaskRequest, deleteTaskRequest, getTasksRequest, updateTaskRequest } from "../services/taskService";
-//TODO: Arreglar que aumenta el tamaño de la web en lugar de añadir una barra para deslizar en la lista de las tareas
 type TaskManagerProps = {
   variant?: "home" | "project";
   projectId?: string | null;

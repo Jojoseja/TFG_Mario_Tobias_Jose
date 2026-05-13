@@ -4,7 +4,6 @@ import Home from "./pages/Home";
 import Ajustes from "./pages/Settings";
 import Layout from "./layout/Layout";
 import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
 import ProjectPage from "./pages/ProjectPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -15,7 +14,6 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
 
         <Route element={<ProtectedRoute />}>

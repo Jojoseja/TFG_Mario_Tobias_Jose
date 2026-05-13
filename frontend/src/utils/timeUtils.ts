@@ -14,7 +14,6 @@ export function parseInputNumber(value: string): number {
   if (value.trim() === "") return 0;
   return Number(value);
 }
-//TODO: No se si queremos contar que si una persona ha trabajado 1min y 30s cuente como 1min o 2min
 export function secondsToRoundedMinutes(totalSeconds: number): number {
   return Math.round(totalSeconds / 60);
 }
