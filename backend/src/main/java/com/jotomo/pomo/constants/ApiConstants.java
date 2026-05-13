@@ -14,6 +14,7 @@ public class ApiConstants {
     public static final String SESSION_PATH = BASE_PATH + "/session";
     public static final String SESSION_CONFIGURATION_PATH = BASE_PATH + "/session-configuration";
     public static final String POMODORO_PATH = BASE_PATH + "/pomodoro";
+    public static final String STATISTICS_PATH = BASE_PATH + "/statistics";
 
     public static final String PATH_ID = "/{id}";
 
