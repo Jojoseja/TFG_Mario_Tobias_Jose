@@ -24,3 +24,14 @@ export async function getStatistics(): Promise<Statistics> {
 
     return await response.json()as Statistics;
 }
+
+export function formatSeconds(segundos: number | null | undefined): string {
+    if (segundos == null) return "--";
+
+    const horas = Math.floor(segundos / 3600);
+    const minutos = Math.floor((segundos % 3600) / 60);
+
+    if (horas > 0 && minutos > 0) return `${horas} h ${minutos} min`;
+    if (horas > 0) return `${horas} h`;
+    return `${minutos} min`;
+}

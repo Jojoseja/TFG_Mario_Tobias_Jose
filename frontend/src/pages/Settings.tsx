@@ -10,6 +10,7 @@ import type { Statistics } from "../types/statistics";
 import {getStatistics} from "../services/statisticsService.ts";
 import {getProjectsRequest} from "../services/projectService.ts";
 import type {Project} from "../types/project.ts";
+import {formatSeconds} from "../services/statisticsService.ts";
 
 
 const LOCAL_APP_SETTINGS_STORAGE_KEY = "localAppSettings";
@@ -85,16 +86,6 @@ function Settings() {
   const [sessionConfigMessage, setSessionConfigMessage] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
 
-  const formatSeconds = (segundos: number | null | undefined): string => {
-    if (segundos == null) return "--";
-
-    const horas = Math.floor(segundos / 3600);
-    const minutos = Math.floor((segundos % 3600) / 60);
-
-    if (horas > 0 && minutos > 0) return `${horas} h ${minutos} min`;
-    if (horas > 0) return `${horas} h`;
-    return `${minutos} min`;
-  }
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -282,7 +273,6 @@ function Settings() {
   const mostWorkedProjectName =
       projects.find((project) => project.id === statistics?.mostWorkedProject)
           ?.name ?? "--";
-
 
   return (
     <section className="settings-page">
