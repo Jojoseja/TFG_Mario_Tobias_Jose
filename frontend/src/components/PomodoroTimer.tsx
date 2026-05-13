@@ -3,27 +3,13 @@ import "../styles/PomodoroTimer.css";
 import { FaGear } from "react-icons/fa6";
 import PomodoroSettingsModal from "./PomodoroSettingsModal";
 import type { PomodoroConfig } from "./PomodoroSettingsModal";
-import type {
-  SessionConfiguration,
-  SessionConfigurationRequest,
-} from "../types/sessionConfiguration";
+import type { SessionConfiguration, SessionConfigurationRequest } from "../types/sessionConfiguration";
 import type { SessionRequest } from "../types/session";
-import type {
-  BackendSessionType,
-  PomodoroResponse,
-} from "../types/pomodoro";
-import {
-  getSessionConfigurationRequest,
-  putSessionConfigurationRequest,
-} from "../services/sessionConfigurationService";
-import {
-  finishSessionRequest,
-  startSessionRequest,
-} from "../services/sessionService";
-import {
-  createPomodoroRequest,
-  updatePomodoroRequest,
-} from "../services/pomodoroService";
+import type { BackendSessionType, PomodoroResponse } from "../types/pomodoro";
+import type { LocalAppSettings } from "../types/settings";
+import { getSessionConfigurationRequest, putSessionConfigurationRequest } from "../services/sessionConfigurationService";
+import { finishSessionRequest, startSessionRequest } from "../services/sessionService";
+import { createPomodoroRequest, updatePomodoroRequest } from "../services/pomodoroService";
 import { secondsToRoundedMinutes } from "../utils/timeUtils";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
@@ -52,6 +38,7 @@ type StoredPomodoroTimerState = {
 };
 
 const POMODORO_TIMER_STORAGE_KEY = "pomodoroTimerState";
+const LOCAL_APP_SETTINGS_STORAGE_KEY = "localAppSettings";
 
 const initialUsedSeconds: UsedSecondsByStatus = {
   work: 0,
@@ -64,6 +51,13 @@ const defaultPomodoroConfig: PomodoroConfig = {
   shortRestSeconds: 300,
   longRestSeconds: 900,
   cyclesBeforeLongRest: 4,
+};
+
+const defaultLocalAppSettings: LocalAppSettings = {
+  autoStartBreaks: false,
+  autoStartPomodoros: false,
+  soundEnabled: true,
+  notificationsEnabled: true,
 };
 
 function PomodoroTimer({
@@ -327,9 +321,15 @@ function PomodoroTimer({
       setSeconds(getSecondsForSessionStatus(nextStatus, config));
       setPomodoroOrderIndex(nextOrderIndex);
       setActivePomodoro(nextPomodoro);
+
+      const shouldAutoStart =
+        completeCurrentPomodoro && shouldAutoStartSession(nextStatus);
+
+      setIsRunning(shouldAutoStart);
     } catch (error) {
       console.error("Error cambiando de pomodoro", error);
       showNotification("error", "No se ha podido cambiar al siguiente tramo.");
+      setIsRunning(false);
     } finally {
       setIsChangingPomodoro(false);
     }
@@ -622,6 +622,34 @@ function getSecondsForSessionStatus(
   if (status === "work") return config.workSeconds;
   if (status === "shortRest") return config.shortRestSeconds;
   return config.longRestSeconds;
+}
+
+function shouldAutoStartSession(nextStatus: SessionStatus): boolean {
+  const settings = getStoredLocalAppSettings();
+
+  if (nextStatus === "work") {
+    return settings.autoStartPomodoros;
+  }
+
+  return settings.autoStartBreaks;
+}
+
+function getStoredLocalAppSettings(): LocalAppSettings {
+  const storedSettings = localStorage.getItem(LOCAL_APP_SETTINGS_STORAGE_KEY);
+
+  if (!storedSettings) {
+    return defaultLocalAppSettings;
+  }
+
+  try {
+    return {
+      ...defaultLocalAppSettings,
+      ...(JSON.parse(storedSettings) as Partial<LocalAppSettings>),
+    };
+  } catch (error) {
+    console.error("Error leyendo los ajustes locales", error);
+    return defaultLocalAppSettings;
+  }
 }
 
 function saveStoredPomodoroTimerState(state: StoredPomodoroTimerState) {

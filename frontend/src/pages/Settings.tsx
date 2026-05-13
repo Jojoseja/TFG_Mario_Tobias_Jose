@@ -1,19 +1,13 @@
 import { useEffect, useState } from "react";
 import "../styles/Settings.css";
-import type { User } from "../types/user";
-import type {
-  SessionConfiguration,
-  SessionConfigurationRequest,
-} from "../types/sessionConfiguration";
-import {
-  getSessionConfigurationRequest,
-  putSessionConfigurationRequest,
-} from "../services/sessionConfigurationService";
+import type { SessionConfiguration, SessionConfigurationRequest } from "../types/sessionConfiguration";
+import { getSessionConfigurationRequest, putSessionConfigurationRequest } from "../services/sessionConfigurationService";
 import type { LocalAppSettings } from "../types/settings";
 import DurationInput from "../components/DurationInput";
-
 import { getStoredUser, saveStoredUser } from "../services/userStorageService";
+import { patchUserMeRequest } from "../services/userService";
 
+//Variable para guardar la configuración en el localStorage
 const defaultLocalAppSettings: LocalAppSettings = {
   autoStartBreaks: false,
   autoStartPomodoros: false,
@@ -21,14 +15,14 @@ const defaultLocalAppSettings: LocalAppSettings = {
   notificationsEnabled: true,
 };
 
+//TODO: Falta hacer que el backend pida el userId en el header del metodo de actualizar usuario (para actualizar el nombre), porque ahora mismo no funciona el actualizar un usuario
+//TODO: Falta modificar el css para que se vean las 3 tarjetas de estadísticas de abajo más bonitas
 function Settings() {
-  const user = getStoredUser();
-
+  const [user, setUser] = useState(() => getStoredUser());
   const [username, setUsername] = useState(user?.username ?? "");
 
   const [sessionConfiguration, setSessionConfiguration] =
     useState<SessionConfiguration | null>(null);
-
   const [savedSessionConfiguration, setSavedSessionConfiguration] =
     useState<SessionConfiguration | null>(null);
 
@@ -50,6 +44,8 @@ function Settings() {
 
   const [isLoadingSessionConfig, setIsLoadingSessionConfig] = useState(true);
   const [isSavingSessionConfig, setIsSavingSessionConfig] = useState(false);
+
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   const [sessionConfigMessage, setSessionConfigMessage] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
@@ -112,25 +108,37 @@ function Settings() {
     }));
   };
 
-  const handleSaveUser = () => {
+  const handleSaveUser = async () => {
     if (!user) return;
 
-    if (username.trim() === "") {
+    const trimmedUsername = username.trim();
+
+    if (trimmedUsername === "") {
       setProfileMessage("El nombre de usuario no puede estar vacío.");
       return;
     }
 
-    const updatedUser: User = {
-      ...user,
-      username: username.trim(),
-    };
+    setIsSavingProfile(true);
 
-    saveStoredUser(updatedUser);
-    setProfileMessage("Perfil guardado correctamente.");
+    try {
+      const updatedUser = await patchUserMeRequest({
+        username: trimmedUsername,
+      });
 
-    window.setTimeout(() => {
-      setProfileMessage("");
-    }, 2500);
+      saveStoredUser(updatedUser);
+      setUser(updatedUser);
+
+      setProfileMessage("Perfil guardado correctamente.");
+
+      window.setTimeout(() => {
+        setProfileMessage("");
+      }, 2500);
+    } catch (error) {
+      console.error("Error actualizando el perfil", error);
+      setProfileMessage("No se ha podido actualizar el perfil.");
+    } finally {
+      setIsSavingProfile(false);
+    }
   };
 
   const handleResetSessionConfiguration = () => {
@@ -224,9 +232,10 @@ function Settings() {
           <button
             className="primary-settings-button"
             type="button"
-            onClick={handleSaveUser}
+            onClick={() => void handleSaveUser()}
+            disabled={isSavingProfile}
           >
-            Guardar perfil
+            {isSavingProfile ? "Guardando..." : "Guardar perfil"}
           </button>
 
           {profileMessage && (
@@ -361,7 +370,7 @@ function Settings() {
         </article>
 
         <article className="settings-card">
-          <h2>Apariencia y notificaciones</h2>
+          <h2>Apariencia</h2>
 
           <label className="settings-switch-row">
             <div>
@@ -373,36 +382,6 @@ function Settings() {
               type="checkbox"
               checked={lightMode}
               onChange={(e) => setLightMode(e.target.checked)}
-            />
-          </label>
-
-          <label className="settings-switch-row">
-            <div>
-              <strong>Sonidos</strong>
-              <span>Reproducir sonido al finalizar una sesión.</span>
-            </div>
-
-            <input
-              type="checkbox"
-              checked={localAppSettings.soundEnabled}
-              onChange={(e) =>
-                updateLocalAppSetting("soundEnabled", e.target.checked)
-              }
-            />
-          </label>
-
-          <label className="settings-switch-row">
-            <div>
-              <strong>Notificaciones</strong>
-              <span>Mostrar aviso al terminar un pomodoro o descanso.</span>
-            </div>
-
-            <input
-              type="checkbox"
-              checked={localAppSettings.notificationsEnabled}
-              onChange={(e) =>
-                updateLocalAppSetting("notificationsEnabled", e.target.checked)
-              }
             />
           </label>
         </article>
@@ -419,11 +398,6 @@ function Settings() {
             <div className="settings-stat">
               <span>Tiempo total enfocado</span>
               <strong>0 h</strong>
-            </div>
-
-            <div className="settings-stat">
-              <span>Racha actual</span>
-              <strong>0 días</strong>
             </div>
 
             <div className="settings-stat">

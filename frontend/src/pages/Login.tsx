@@ -3,28 +3,36 @@ import "../styles/Login.css";
 import { useState } from "react";
 import { loginRequest } from "../services/authService";
 import { saveStoredUser } from "../services/userStorageService";
+import { getLatestProject } from "../services/homeService";
+import {
+  removeStoredLatestProject,
+  saveStoredLatestProject,
+} from "../services/latestProjectStorageService";
 
 function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [notification, setNotification] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
-  
-  const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //navigate("/home") // TODO: Eliminar cuando se vaya a entregar, solo está para cuando inicio el frontend
+
     if (!email || !password) {
       setNotification({
         type: "error",
-        text: "Por favor, completa todos los campos."
+        text: "Por favor, completa todos los campos.",
       });
+
       setTimeout(() => {
         setNotification(null);
       }, 3000);
+
       return;
     }
 
@@ -35,6 +43,18 @@ function Login() {
       });
 
       saveStoredUser(user);
+
+      try {
+        if (user.id) {
+          const latestProject = await getLatestProject(user.id);
+          saveStoredLatestProject(latestProject);
+        } else {
+          removeStoredLatestProject();
+        }
+      } catch (error) {
+        console.error("No se pudo cargar el último proyecto trabajado", error);
+        removeStoredLatestProject();
+      }
 
       setNotification({
         type: "success",
@@ -77,10 +97,10 @@ function Login() {
           <form className="login-form" onSubmit={handleLogin}>
             <div className="input-group">
               <label htmlFor="email">Correo</label>
-              <input 
-                id="email" 
-                type="email" 
-                placeholder="tuemail@ejemplo.com" 
+              <input
+                id="email"
+                type="email"
+                placeholder="tuemail@ejemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -88,20 +108,30 @@ function Login() {
 
             <div className="input-group">
               <label htmlFor="password">Contraseña</label>
-              <input 
-                id="password" 
-                type="password" 
-                placeholder="••••••••" 
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <p className="login-links"><Link to="/forgot-password">¿Contraseña olvidada?</Link></p>
+
+              <p className="login-links">
+                <Link to="/forgot-password">¿Contraseña olvidada?</Link>
+              </p>
             </div>
 
-            <button type="submit" className="login-button">Entrar</button>
+            <button type="submit" className="login-button">
+              Entrar
+            </button>
           </form>
 
-          <p className="login-footer">¿No tienes cuenta? <span className="login-links"><Link to="/register">Regístrate</Link></span></p>
+          <p className="login-footer">
+            ¿No tienes cuenta?{" "}
+            <span className="login-links">
+              <Link to="/register">Regístrate</Link>
+            </span>
+          </p>
         </div>
       </div>
     </>
