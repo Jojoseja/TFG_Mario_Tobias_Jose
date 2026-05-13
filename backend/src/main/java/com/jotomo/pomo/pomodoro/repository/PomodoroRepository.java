@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface PomodoroRepository extends JpaRepository<Pomodoro, UUID> {
 
     Optional<Pomodoro> findBySessionAndOrderIndex(Session session, int orderIndex);
+
+    long countBySession_User_IdAndCompletedTrue(UUID userId);
 }
