@@ -1,16 +1,20 @@
 import "../styles/Home.css";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import PomodoroTimer from "../components/PomodoroTimer";
 import TaskManager from "../components/TaskManager";
 import type { User } from "../types/user";
 import type { Project } from "../types/project";
 import { getStoredUser } from "../services/userStorageService";
 import { getStoredLatestProject } from "../services/latestProjectStorageService";
+import type {Statistics} from "../types/statistics.ts";
+import {formatSeconds, getStatistics} from "../services/statisticsService.ts";
 
 type SessionStatus = "work" | "shortRest" | "longRest";
 
 function Home() {
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("work");
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
+
 
   const user: User | null = getStoredUser();
   const latestProject: Project | null = getStoredLatestProject();
@@ -26,6 +30,19 @@ function Home() {
 
   const nextBadgeText = sessionStatus === "work" ? "Descanso" : "Pomodoro";
 
+  useEffect(() => {
+    const loadStatistics = async () => {
+      try {
+        const loadedStatistics = await getStatistics();
+        setStatistics(loadedStatistics);
+      } catch (error) {
+        console.error("Error cargando estadísticas", error);
+      }
+    };
+
+    void loadStatistics();
+  }, []);
+
   return (
     <>
       <header className="dashboard-header">
@@ -38,20 +55,19 @@ function Home() {
       <section className="stats-grid">
         <div className="stat-card">
           <h3>Tiempo hoy</h3>
-          <p>03:24 h</p>
-          <span>+45 min respecto a ayer</span>
+          <p>{formatSeconds(statistics?.timeToday)}</p>
+          <span>Tiempo en el foco</span>
         </div>
 
         <div className="stat-card">
           <h3>Pomodoros</h3>
           <p>7</p>
-          <span>2 sesiones completadas esta mañana</span>
+          <span>{statistics?.pomodorosCompleted ?? "--"}</span>
         </div>
 
         <div className="stat-card">
           <h3>Tareas completadas</h3>
-          <p>12</p>
-          <span>75% de progreso semanal</span>
+          <p>{statistics?.taskCompleted ?? "--"}</p>
         </div>
       </section>
 
