@@ -407,6 +407,31 @@
   overflow: hidden;
 }
 
+.dashboard-content--scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.dashboard-content--scrollable::-webkit-scrollbar {
+  width: 7px;
+}
+
+.dashboard-content--scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-content--scrollable::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
+}
+
+.dashboard-content--scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(115, 216, 255, 0.55);
+}
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -665,6 +690,10 @@
     min-height: auto;
     padding: 18px 14px 24px;
     align-items: stretch;
+    overflow: visible;
+  }
+
+  .dashboard-content--scrollable {
     overflow: visible;
   }
 

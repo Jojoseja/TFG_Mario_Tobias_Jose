@@ -67,6 +67,7 @@ function buildLogoutFinishSessionRequest(
 function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const isSettingsPage = location.pathname.startsWith("/ajustes");
 
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([
@@ -302,7 +303,11 @@ function Layout() {
         </div>
       </aside>
 
-      <main className="dashboard-content">
+      <main
+        className={`dashboard-content ${
+          isSettingsPage ? "dashboard-content--scrollable" : ""
+        }`}
+      >
         <Outlet context={{ projects }} />
       </main>
 
