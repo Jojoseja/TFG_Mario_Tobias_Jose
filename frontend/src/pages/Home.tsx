@@ -68,7 +68,7 @@ function Home() {
         <div className="stat-card">
           <h3>Tareas completadas</h3>
           <p>{statistics?.taskCompleted ?? "--"}</p>
-          <span>Sigue asi!!<span/>
+          <span>Sigue asi!!</span>
         </div>
       </section>
 
